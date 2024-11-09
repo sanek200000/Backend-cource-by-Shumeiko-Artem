@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# my
+*src/requirements.txt
+
 # C extensions
 *.so
 
