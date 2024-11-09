@@ -9,12 +9,20 @@ hotels = [
 ]
 
 
-@app.get("/")
+@app.get(
+    "/",
+    summary="Получить список всех отелей",
+    description="Получить список всех отелей",
+)
 def func() -> list[dict[str, Any]]:
     return hotels
 
 
-@app.get("/hotels")
+@app.get(
+    "/hotels",
+    summary="Получить информацию об отеле",
+    description="Получить информацию об отеле по его id или названию",
+)
 def get_hotels(
     id: int,
     title: str = Query(description="Название отеля"),
@@ -22,50 +30,57 @@ def get_hotels(
     return [h for h in hotels if h["title"] == title and h["id"] == id]
 
 
-@app.post("/hotels")
+@app.post("/hotels", summary="Добавить отель в список")
 def create_hotel(title: str = Body(embed=True)) -> dict[str, str]:
     global hotels
     hotels.append({"id": hotels[-1]["id"] + 1, "title": title})
     return {"status": "OK"}
 
 
-@app.put("/hotels/{hotel_id}")
+@app.put(
+    "/hotels/{hotel_id}",
+    summary="Обновление информации об отеле",
+    description="Обновление информации об отеле",
+)
 def modify_hotel(
     hotel_id: int,
-    title: str | None = Body(description="Название отеля"),
-    name: str | None = Body(description="Наименование отеля"),
+    title: str = Body(description="Название отеля"),
+    name: str = Body(description="Наименование отеля"),
 ) -> dict[str, str]:
-    if not (name or title) or (name == "" or title == ""):
+    if name == "" or title == "":
         return {"status": "not OK"}
 
     global hotels
-    for hotel in hotels:
-        if hotel["id"] == hotel_id:
-            hotel["title"] = title
-            hotel["name"] = name
+    hotel = [h for h in hotels if h["id"] == hotel_id][0]
+    hotel["title"] = title
+    hotel["name"] = name
     return {"status": "OK"}
 
 
-@app.patch("/hotels/{hotel_id}")
+@app.patch(
+    "/hotels/{hotel_id}",
+    summary="Частичное обновление информации об отеле",
+    description="Частичное обновление информации об отеле",
+)
 def modify_hotel(
     hotel_id: int,
-    title: str | None = Body(description="Название отеля"),
-    name: str | None = Body(description="Наименование отеля"),
+    title: str | None = Body(default=None, description="Название отеля"),
+    name: str | None = Body(default=None, description="Наименование отеля"),
 ) -> dict[str, str]:
-    if not (name and title) or (name == "" and title == ""):
-        return {"status": "not OK"}
-
     global hotels
-    for hotel in hotels:
-        if hotel["id"] == hotel_id:
-            if title and title != "":
-                hotel["title"] = title
-            if name and name != "":
-                hotel["name"] = name
+    hotel = [h for h in hotels if h["id"] == hotel_id][0]
+    if title and title != "":
+        hotel["title"] = title
+    if name and name != "":
+        hotel["name"] = name
     return {"status": "OK"}
 
 
-@app.delete("/hotels/{hotel_id}")
+@app.delete(
+    "/hotels/{hotel_id}",
+    summary="Удаление информации об отеле из БД",
+    description="Удаление информации об отеле из БД",
+)
 def delete_hotel(hotel_id: int) -> dict[str, str]:
     global hotels
     hotels = [h for h in hotels if h["id"] != hotel_id]
