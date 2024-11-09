@@ -14,7 +14,7 @@ services:
       - "8000:8000"
     volumes:
       - ./src:/src
-      - ./requirements.txt:/temp/requirements.txt
+      - ./requirements.txt:/src/requirements.txt
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   postgres:
