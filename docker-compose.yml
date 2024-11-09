@@ -14,7 +14,7 @@ services:
       - "8000:8000"
     volumes:
       - ./src:/src
-      - ./requirements.txt:/src/requirements.txt
+      - ./requirements.txt:/temp/requirements.txt
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   postgres:
@@ -25,9 +25,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data # Для сохранения данных
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432" # Маппинг порта
+      - "5432:5432"
     restart: always
 
 volumes:
