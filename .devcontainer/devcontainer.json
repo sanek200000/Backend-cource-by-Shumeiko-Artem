@@ -1,0 +1,57 @@
+{
+	"name": "Backend-cource-by-Shumeiko-Artem",
+	"dockerComposeFile": [
+		"../docker-compose.yml"
+	],
+	"service": "web-app",
+	"workspaceFolder": "/src",
+	"shutdownAction": "stopCompose",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"ms-python.black-formatter"
+			],
+			"settings": {
+				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"python.pythonPath": "/usr/local/bin/python",
+				"python.testing.pytestArgs": [
+					"."
+				],
+				"python.languageServer": "Pylance",
+				"python.testing.unittestEnabled": false,
+				"python.testing.pytestEnabled": true,
+				"python.formatting.provider": "black",
+				"python.linting.mypyEnabled": true,
+				"python.linting.enabled": true
+			},
+			//TODO: change lounch for fastapi
+			"launch": {
+				"configurations": [
+					{
+						"name": "Python Debugger: FastAPI",
+						"type": "debugpy",
+						"request": "launch",
+						"module": "uvicorn",
+						"args": [
+							"main:app",
+							"--reload"
+						],
+						"jinja": true
+					}
+				]
+			}
+		}
+	},
+	"forwardPorts": [
+		8000,
+		6379,
+		5555,
+		5432
+	],
+	//"postCreateCommand": "pip install -r /temp/requirements.txt",
+	"remoteUser": "service-user",
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {}
+	}
+}

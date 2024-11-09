@@ -1,0 +1,35 @@
+services:
+  web-app:
+    build:
+      context: .
+    container_name: web-app
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASS=postgres
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/src
+      - ./requirements.txt:/src/requirements.txt
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Для сохранения данных
+    ports:
+      - "5432:5432" # Маппинг порта
+    restart: always
+
+volumes:
+  postgres_data:
+    driver: local
