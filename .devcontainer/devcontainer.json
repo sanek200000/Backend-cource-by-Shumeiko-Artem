@@ -25,7 +25,6 @@
 				"python.linting.mypyEnabled": true,
 				"python.linting.enabled": true
 			},
-			//TODO: change lounch for fastapi
 			"launch": {
 				"configurations": [
 					{
@@ -35,7 +34,11 @@
 						"module": "uvicorn",
 						"args": [
 							"main:app",
-							"--reload"
+							"--reload",
+							"--host",
+							"0.0.0.0",
+							"--port",
+							"8000"
 						],
 						"jinja": true
 					}
@@ -45,9 +48,7 @@
 	},
 	"forwardPorts": [
 		8000,
-		6379,
-		5555,
-		5432
+		8000
 	],
 	//"postCreateCommand": "pip install -r /temp/requirements.txt",
 	"remoteUser": "service-user",
