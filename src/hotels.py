@@ -21,14 +21,22 @@ hotels = [
     summary="Получить список всех отелей",
     description="Получить список всех отелей",
 )
-def get_hotels(page: int = 1, per_page: int = 3) -> list[dict[str, Any]]:
-    l = (page - 1) * per_page
-    r = page * per_page
-    result = hotels[l:r]
+def get_hotels(
+    page: int | None = Query(None, description="Номер страницы", gt=0),
+    per_page: int | None = Query(
+        None, description="Количество элементов на странице, max 20", gt=0, lt=20
+    ),
+) -> list[dict[str, Any]]:
+    if page and per_page:
+        l = (page - 1) * per_page
+        r = page * per_page
+        result = hotels[l:r]
 
-    if result:
-        return result
-    return [{"status": "Out of range"}]
+        if result:
+            return result
+        return [{"status": "Out of range"}]
+
+    return hotels
 
 
 @router.get(
@@ -37,10 +45,24 @@ def get_hotels(page: int = 1, per_page: int = 3) -> list[dict[str, Any]]:
     description="Получить информацию об отеле по его id или названию",
 )
 def get_hotel(
-    id: int,
-    title: str = Query(description="Название отеля"),
+    id: int | None = Query(None),
+    title: str | None = Query(None, description="Название отеля"),
+    page: int | None = Query(None, description="Номер страницы", gt=0),
+    per_page: int | None = Query(
+        3, description="Количество элементов на странице, max 20", gt=0, lt=20
+    ),
 ) -> list[dict[str, Any]]:
-    return [h for h in hotels if h["title"] == title and h["id"] == id]
+
+    hotels_ = list()
+    for hotel in hotels:
+        if id and hotel["id"] == id:
+            hotels_.append(hotel)
+        if title and hotel["title"] == title:
+            hotels_.append(hotel)
+
+    if page and per_page:
+        return hotels_[per_page * (page - 1) :][:per_page]
+    return hotels
 
 
 @router.post("/", summary="Добавить отель в список")
