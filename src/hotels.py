@@ -6,8 +6,13 @@ from schemas.hotels import Hotel, HotelPatch
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
 hotels = [
-    {"id": 1, "title": "Sochi", "name": "best hotel in Sochi"},
-    {"id": 2, "title": "Dubai", "name": "best hotel in Dubai"},
+    {"id": 1, "title": "Sochi", "name": "sochi"},
+    {"id": 2, "title": "Дубай", "name": "dubai"},
+    {"id": 3, "title": "Мальдивы", "name": "maldivi"},
+    {"id": 4, "title": "Геленджик", "name": "gelendzhik"},
+    {"id": 5, "title": "Москва", "name": "moscow"},
+    {"id": 6, "title": "Казань", "name": "kazan"},
+    {"id": 7, "title": "Санкт-Петербург", "name": "spb"},
 ]
 
 
@@ -16,8 +21,14 @@ hotels = [
     summary="Получить список всех отелей",
     description="Получить список всех отелей",
 )
-def get_hotels() -> list[dict[str, Any]]:
-    return hotels
+def get_hotels(page: int = 1, per_page: int = 3) -> list[dict[str, Any]]:
+    l = (page - 1) * per_page
+    r = page * per_page
+    result = hotels[l:r]
+
+    if result:
+        return result
+    return [{"status": "Out of range"}]
 
 
 @router.get(
