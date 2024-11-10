@@ -1,6 +1,7 @@
 from typing import Any
 from fastapi import Body, Query, APIRouter
 
+from dependences import PaginationDep
 from schemas.hotels import Hotel, HotelPatch
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
@@ -21,15 +22,10 @@ hotels = [
     summary="Получить список всех отелей",
     description="Получить список всех отелей",
 )
-def get_hotels(
-    page: int | None = Query(None, description="Номер страницы", gt=0),
-    per_page: int | None = Query(
-        None, description="Количество элементов на странице, max 20", gt=0, lt=20
-    ),
-) -> list[dict[str, Any]]:
-    if page and per_page:
-        l = (page - 1) * per_page
-        r = page * per_page
+def get_hotels(pgntn: PaginationDep) -> list[dict[str, Any]]:
+    if pgntn.page and pgntn.per_page:
+        l = (pgntn.page - 1) * pgntn.per_page
+        r = pgntn.page * pgntn.per_page
         result = hotels[l:r]
 
         if result:
@@ -45,12 +41,9 @@ def get_hotels(
     description="Получить информацию об отеле по его id или названию",
 )
 def get_hotel(
+    pgntn: PaginationDep,
     id: int | None = Query(None),
     title: str | None = Query(None, description="Название отеля"),
-    page: int | None = Query(None, description="Номер страницы", gt=0),
-    per_page: int | None = Query(
-        3, description="Количество элементов на странице, max 20", gt=0, lt=20
-    ),
 ) -> list[dict[str, Any]]:
 
     hotels_ = list()
@@ -60,8 +53,8 @@ def get_hotel(
         if title and hotel["title"] == title:
             hotels_.append(hotel)
 
-    if page and per_page:
-        return hotels_[per_page * (page - 1) :][:per_page]
+    if pgntn.page and pgntn.per_page:
+        return hotels_[pgntn.per_page * (pgntn.page - 1) :][: pgntn.per_page]
     return hotels
 
 
