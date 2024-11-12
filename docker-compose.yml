@@ -4,10 +4,11 @@ services:
       context: .
     container_name: web-app
     environment:
-      - DB_HOST=postgres
-      - DB_NAME=booking
-      - DB_USER=postgres
-      - DB_PASS=postgres
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_PORT=${DB_PORT}
     depends_on:
       - postgres
     ports:
@@ -21,13 +22,13 @@ services:
     image: postgres:13
     container_name: postgres
     environment:
-      POSTGRES_DB: booking
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
     volumes:
       - pg_data_booking:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5432:${DB_PORT}"
     restart: unless-stopped
 
 volumes:
