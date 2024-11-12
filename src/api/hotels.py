@@ -1,7 +1,7 @@
 from typing import Any
 from fastapi import Body, Query, APIRouter
 
-from dependences import PaginationDep
+from api.dependences import PaginationDep
 from schemas.hotels import Hotel, HotelPatch
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
