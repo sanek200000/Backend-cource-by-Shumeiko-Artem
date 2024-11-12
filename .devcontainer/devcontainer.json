@@ -10,6 +10,7 @@
 		"vscode": {
 			"extensions": [
 				"ms-python.python",
+				"cweijan.vscode-database-client2",
 				"ms-python.black-formatter"
 			],
 			"settings": {

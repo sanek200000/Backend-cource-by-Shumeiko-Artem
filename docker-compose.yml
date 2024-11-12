@@ -5,7 +5,7 @@ services:
     container_name: web-app
     environment:
       - DB_HOST=postgres
-      - DB_NAME=postgres
+      - DB_NAME=booking
       - DB_USER=postgres
       - DB_PASS=postgres
     depends_on:
@@ -21,15 +21,15 @@ services:
     image: postgres:13
     container_name: postgres
     environment:
-      POSTGRES_DB: postgres
+      POSTGRES_DB: booking
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pg_data_booking:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    restart: always
+    restart: unless-stopped
 
 volumes:
-  postgres_data:
+  pg_data_booking:
     driver: local
