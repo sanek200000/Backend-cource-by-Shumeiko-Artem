@@ -6,7 +6,7 @@ from api.dependences import PaginationDep
 from models.hotels import HotelsOrm
 from schemas.hotels import Hotel, HotelPatch
 
-from db import async_session_maker
+from db import async_session_maker, engine
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
@@ -80,6 +80,9 @@ async def create_hotel(
 
     async with async_session_maker() as session:
         add_hotel_stmt = insert(HotelsOrm).values(**hotel_data.model_dump())
+        print(
+            add_hotel_stmt.compile(bind=engine, compile_kwargs={"literal_binds": True})
+        )
         await session.execute(add_hotel_stmt)
         await session.commit()
 
