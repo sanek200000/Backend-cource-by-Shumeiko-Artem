@@ -10,26 +10,6 @@ from db import async_session_maker, engine
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
-"""
-@router.get(
-    "/",
-    summary="Получить список всех отелей",
-    description="Получить список всех отелей",
-)
-def get_hotels(pgntn: PaginationDep) -> list[dict[str, Any]]:
-    if pgntn.page and pgntn.per_page:
-        l = (pgntn.page - 1) * pgntn.per_page
-        r = pgntn.page * pgntn.per_page
-        result = hotels[l:r]
-
-        if result:
-            return result
-        return [{"status": "Out of range"}]
-
-    return hotels
-
-"""
-
 
 @router.get(
     "",
