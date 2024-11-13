@@ -1,8 +1,8 @@
-"""add rooms попытка намбер 2
+"""add rooms
 
-Revision ID: 8ab6964e0f4b
-Revises: 5056f141ae7c
-Create Date: 2024-11-13 11:16:09.057476
+Revision ID: d48ce0eab615
+Revises: 30bc6b6d68ae
+Create Date: 2024-11-13 16:13:55.414790
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '8ab6964e0f4b'
-down_revision: Union[str, None] = '5056f141ae7c'
+revision: str = 'd48ce0eab615'
+down_revision: Union[str, None] = '30bc6b6d68ae'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
