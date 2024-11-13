@@ -38,8 +38,8 @@ def get_hotels(pgntn: PaginationDep) -> list[dict[str, Any]]:
 )
 async def get_hotel(
     pgntn: PaginationDep,
-    id: int | None = Query(None, description="id"),
     title: str | None = Query(None, description="Название отеля"),
+    location: str | None = Query(None, description="Адрес отеля"),
 ):
 
     per_page = pgntn.per_page or 5
@@ -47,10 +47,10 @@ async def get_hotel(
         query = select(HotelsOrm)
         print(query.compile(bind=engine, compile_kwargs={"literal_binds": True}))
 
-        if id:
-            query = query.filter_by(id=id)
         if title:
-            query = query.filter_by(title=title)
+            query = query.filter(HotelsOrm.title.like(f"%{title}%"))
+        if location:
+            query = query.filter(HotelsOrm.location.like(f"%{location}%"))
         query = query.limit(per_page).offset(per_page * (pgntn.page - 1))
 
         result = await session.execute(query)
@@ -65,12 +65,32 @@ async def create_hotel(
     hotel_data: Hotel = Body(
         openapi_examples={
             "1": {
-                "summary": "Сочи",
-                "value": {"title": "Сочи", "location": "ул. Моря, д.1"},
+                "summary": "Сочи1",
+                "value": {
+                    "title": "Атрия",
+                    "location": "Адлерский район, улица Мира, д.44 а, Сочи",
+                },
             },
             "2": {
-                "summary": "Дубай",
-                "value": {"title": "Дубай", "location": "ул. Абракадабры, д.2"},
+                "summary": "Сочи2",
+                "value": {
+                    "title": "Радуга-Престиж",
+                    "location": "Краснодарский край, г. Сочи, ул. Пирогова, д. 2/3",
+                },
+            },
+            "3": {
+                "summary": "Дубай1",
+                "value": {
+                    "title": "Отель Al Khoory Executive Hotel",
+                    "location": "Al Wasl Area, Dubai, Дубай",
+                },
+            },
+            "4": {
+                "summary": "Дубай2",
+                "value": {
+                    "title": "Holiday Inn Express Dubai Internet City an IHG Hotel",
+                    "location": "Knowledge Village Pob 282647, Дубай",
+                },
             },
         }
     )
