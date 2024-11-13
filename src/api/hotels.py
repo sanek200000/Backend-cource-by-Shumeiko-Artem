@@ -1,6 +1,6 @@
 from typing import Any
 from fastapi import Body, Query, APIRouter
-from sqlalchemy import insert
+from sqlalchemy import insert, select
 
 from api.dependences import PaginationDep
 from models.hotels import HotelsOrm
@@ -10,17 +10,7 @@ from db import async_session_maker, engine
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
-hotels = [
-    {"id": 1, "title": "Sochi", "name": "sochi"},
-    {"id": 2, "title": "Дубай", "name": "dubai"},
-    {"id": 3, "title": "Мальдивы", "name": "maldivi"},
-    {"id": 4, "title": "Геленджик", "name": "gelendzhik"},
-    {"id": 5, "title": "Москва", "name": "moscow"},
-    {"id": 6, "title": "Казань", "name": "kazan"},
-    {"id": 7, "title": "Санкт-Петербург", "name": "spb"},
-]
-
-
+"""
 @router.get(
     "/",
     summary="Получить список всех отелей",
@@ -38,28 +28,36 @@ def get_hotels(pgntn: PaginationDep) -> list[dict[str, Any]]:
 
     return hotels
 
+"""
+
 
 @router.get(
     "",
     summary="Получить информацию об отеле",
     description="Получить информацию об отеле по его id или названию",
 )
-def get_hotel(
+async def get_hotel(
     pgntn: PaginationDep,
-    id: int | None = Query(None),
+    id: int | None = Query(None, description="id"),
     title: str | None = Query(None, description="Название отеля"),
-) -> list[dict[str, Any]]:
+):
 
-    hotels_ = list()
-    for hotel in hotels:
-        if id and hotel["id"] == id:
-            hotels_.append(hotel)
-        if title and hotel["title"] == title:
-            hotels_.append(hotel)
+    per_page = pgntn.per_page or 5
+    async with async_session_maker() as session:
+        query = select(HotelsOrm)
+        print(query.compile(bind=engine, compile_kwargs={"literal_binds": True}))
 
-    if pgntn.page and pgntn.per_page:
-        return hotels_[pgntn.per_page * (pgntn.page - 1) :][: pgntn.per_page]
-    return hotels
+        if id:
+            query = query.filter_by(id=id)
+        if title:
+            query = query.filter_by(title=title)
+        query = query.limit(per_page).offset(per_page * (pgntn.page - 1))
+
+        result = await session.execute(query)
+
+        hotels = result.scalars().all()
+        [print(f"{hotel.id}\t{hotel.title}\t{hotel.location}") for hotel in hotels]
+        return hotels
 
 
 @router.post("/", summary="Добавить отель в список")
@@ -76,7 +74,7 @@ async def create_hotel(
             },
         }
     )
-) -> dict[str, str]:
+):
 
     async with async_session_maker() as session:
         add_hotel_stmt = insert(HotelsOrm).values(**hotel_data.model_dump())
@@ -94,7 +92,7 @@ async def create_hotel(
     summary="Обновление информации об отеле",
     description="Обновление информации об отеле",
 )
-def modify_hotel(hotel_id: int, hotel_data: Hotel) -> dict[str, str]:
+def modify_hotel(hotel_id: int, hotel_data: Hotel):
     if hotel_data.name == "" or hotel_data.title == "":
         return {"status": "not OK"}
 
@@ -110,7 +108,7 @@ def modify_hotel(hotel_id: int, hotel_data: Hotel) -> dict[str, str]:
     summary="Частичное обновление информации об отеле",
     description="Частичное обновление информации об отеле",
 )
-def modify_hotel(hotel_id: int, hotel_data: HotelPatch) -> dict[str, str]:
+def modify_hotel(hotel_id: int, hotel_data: HotelPatch):
     global hotels
     hotel = [h for h in hotels if h["id"] == hotel_id][0]
     if hotel_data.title and hotel_data.title != "":
@@ -125,7 +123,7 @@ def modify_hotel(hotel_id: int, hotel_data: HotelPatch) -> dict[str, str]:
     summary="Удаление информации об отеле из БД",
     description="Удаление информации об отеле из БД",
 )
-def delete_hotel(hotel_id: int) -> dict[str, str]:
+def delete_hotel(hotel_id: int):
     global hotels
     hotels = [h for h in hotels if h["id"] != hotel_id]
     return {"status": "OK"}
