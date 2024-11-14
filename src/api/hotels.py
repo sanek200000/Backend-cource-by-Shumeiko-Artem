@@ -23,29 +23,14 @@ async def get_hotel(
     location: str | None = Query(None, description="Адрес отеля"),
 ):
 
+    per_page = pgntn.per_page or 5
     async with async_session_maker() as session:
-        return await HotelsRepository(session).get_all()
-
-    # per_page = pgntn.per_page or 5
-    # async with async_session_maker() as session:
-    #    query = select(HotelsOrm)
-    #    print(query.compile(bind=engine, compile_kwargs={"literal_binds": True}))
-
-    #    if title:
-    #        query = query.filter(
-    #            func.lower(HotelsOrm.title).contains(title.strip().lower())
-    #        )
-    #    if location:
-    #        query = query.filter(
-    #            func.lower(HotelsOrm.location).contains(location.strip().lower())
-    #        )
-    #    query = query.limit(per_page).offset(per_page * (pgntn.page - 1))
-
-    #    result = await session.execute(query)
-
-    #    hotels = result.scalars().all()
-    #    [print(f"{hotel.id}\t{hotel.title}\t{hotel.location}") for hotel in hotels]
-    #    return hotels
+        return await HotelsRepository(session).get_all(
+            title=title,
+            location=location,
+            limit=per_page,
+            offset=per_page * (pgntn.page - 1),
+        )
 
 
 @router.post("/", summary="Добавить отель в список")
