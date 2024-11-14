@@ -4,6 +4,7 @@ from sqlalchemy import func, insert, select
 
 from api.dependences import PaginationDep
 from models.hotels import HotelsOrm
+from repositories.hotels import HotelsRepository
 from schemas.hotels import Hotel, HotelPatch
 
 from db import async_session_maker, engine
@@ -22,26 +23,29 @@ async def get_hotel(
     location: str | None = Query(None, description="Адрес отеля"),
 ):
 
-    per_page = pgntn.per_page or 5
     async with async_session_maker() as session:
-        query = select(HotelsOrm)
-        print(query.compile(bind=engine, compile_kwargs={"literal_binds": True}))
+        return await HotelsRepository(session).get_all()
 
-        if title:
-            query = query.filter(
-                func.lower(HotelsOrm.title).contains(title.strip().lower())
-            )
-        if location:
-            query = query.filter(
-                func.lower(HotelsOrm.location).contains(location.strip().lower())
-            )
-        query = query.limit(per_page).offset(per_page * (pgntn.page - 1))
+    # per_page = pgntn.per_page or 5
+    # async with async_session_maker() as session:
+    #    query = select(HotelsOrm)
+    #    print(query.compile(bind=engine, compile_kwargs={"literal_binds": True}))
 
-        result = await session.execute(query)
+    #    if title:
+    #        query = query.filter(
+    #            func.lower(HotelsOrm.title).contains(title.strip().lower())
+    #        )
+    #    if location:
+    #        query = query.filter(
+    #            func.lower(HotelsOrm.location).contains(location.strip().lower())
+    #        )
+    #    query = query.limit(per_page).offset(per_page * (pgntn.page - 1))
 
-        hotels = result.scalars().all()
-        [print(f"{hotel.id}\t{hotel.title}\t{hotel.location}") for hotel in hotels]
-        return hotels
+    #    result = await session.execute(query)
+
+    #    hotels = result.scalars().all()
+    #    [print(f"{hotel.id}\t{hotel.title}\t{hotel.location}") for hotel in hotels]
+    #    return hotels
 
 
 @router.post("/", summary="Добавить отель в список")
