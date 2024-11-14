@@ -28,9 +28,9 @@ async def get_hotel(
         print(query.compile(bind=engine, compile_kwargs={"literal_binds": True}))
 
         if title:
-            query = query.filter(HotelsOrm.title.like(f"%{title}%"))
+            query = query.filter(HotelsOrm.title.ilike(f"%{title}%"))
         if location:
-            query = query.filter(HotelsOrm.location.like(f"%{location}%"))
+            query = query.filter(HotelsOrm.location.ilike(f"%{location}%"))
         query = query.limit(per_page).offset(per_page * (pgntn.page - 1))
 
         result = await session.execute(query)
