@@ -8,6 +8,11 @@ engine = create_async_engine(settings.DB_URL)
 
 async_session_maker = async_sessionmaker(bind=engine, expire_on_commit=False)
 
+
+class Base(DeclarativeBase):
+    pass
+
+
 ## Пример использования
 # import asyncio
 # from sqlalchemy import text
@@ -18,7 +23,3 @@ async_session_maker = async_sessionmaker(bind=engine, expire_on_commit=False)
 
 
 # asyncio.run(func())
-
-
-class Base(DeclarativeBase):
-    pass
