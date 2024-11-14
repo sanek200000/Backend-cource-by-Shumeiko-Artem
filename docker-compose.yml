@@ -19,12 +19,14 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   postgres:
-    image: postgres:13
+    image: postgres:13-alpine
     container_name: postgres
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
+      #LANG: ru_RU.UTF-8
+      #LC_ALL: ru_RU.UTF-8
     volumes:
       - pg_data_booking:/var/lib/postgresql/data
     ports:
