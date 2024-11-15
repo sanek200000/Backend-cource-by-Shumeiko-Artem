@@ -26,21 +26,3 @@ class HotelsRepository(BaseRepository):
         result = await self.session.execute(query)
 
         return result.scalars().all()
-
-    async def delete(self, id, title, location):
-
-        query = delete(self.model)
-
-        if id:
-            query = query.filter(self.model.id == id)
-        if title:
-            query = query.filter(
-                func.lower(self.model.title).contains(title.strip().lower())
-            )
-        if location:
-            query = query.filter(
-                func.lower(self.model.location).contains(location.strip().lower())
-            )
-
-        print(query.compile(compile_kwargs={"literal_binds": True}))
-        await self.session.execute(query)

@@ -77,24 +77,13 @@ async def create_hotel(
 
 
 @router.put(
-    "/",
+    "/{hotel_id}",
     summary="Обновление информации об отеле",
     description="Обновление информации об отеле",
 )
-async def modify_hotel(
-    hotel_data: Hotel = Body(),
-    id: int | None = Query(None, description="ID"),
-    title: str | None = Query(None, description="Название отеля"),
-    location: str | None = Query(None, description="Адрес отеля"),
-):
-
+async def modify_hotel(hotel_id: int, hotel_data: Hotel):
     async with async_session_maker() as session:
-        await HotelsRepository(session).edit(
-            hotel_data,
-            id=id,
-            title=title,
-            location=location,
-        )
+        await HotelsRepository(session).edit(hotel_data, id=hotel_id)
         await session.commit()
 
     return {"status": "OK"}
@@ -116,18 +105,13 @@ def modify_hotel(hotel_id: int, hotel_data: HotelPatch):
 
 
 @router.delete(
-    "/",
+    "/{hotel_id}",
     summary="Удаление информации об отеле из БД",
     description="Удаление информации об отеле из БД",
 )
-async def delete_hotel(
-    id: int | None = Query(None, description="ID"),
-    title: str | None = Query(None, description="Название отеля"),
-    location: str | None = Query(None, description="Адрес отеля"),
-):
-
+async def delete_hotel(hotel_id: int):
     async with async_session_maker() as session:
-        await HotelsRepository(session).delete(id=id, title=title, location=location)
+        await HotelsRepository(session).delete(id=hotel_id)
         await session.commit()
 
     return {"status": "OK"}

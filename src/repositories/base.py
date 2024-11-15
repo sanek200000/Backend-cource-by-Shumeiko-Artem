@@ -30,7 +30,7 @@ class BaseRepository:
         return result.scalars().one()
 
     async def edit(self, data: BaseModel, **kwargs):
-        query = update(self.model).values(**data.model_dump()).filter_by(**kwargs)
+        query = update(self.model).filter_by(**kwargs).values(**data.model_dump())
         result = await self.session.execute(query)
 
     async def delete(self, **kwargs):
