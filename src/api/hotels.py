@@ -12,6 +12,12 @@ from db import async_session_maker, engine
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
 
+@router.get("/{hotel_id}", summary="Получение информыции об отеле по его id")
+async def get_hotel_by_id(hotel_id: int):
+    async with async_session_maker() as session:
+        return await HotelsRepository(session).get_one_or_none(id=hotel_id)
+
+
 @router.get(
     "",
     summary="Получить информацию об отеле",
