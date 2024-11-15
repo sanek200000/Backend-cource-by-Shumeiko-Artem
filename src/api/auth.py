@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
-import email
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 import jwt
 
 from repositories.users import UsersRepository
@@ -19,6 +18,10 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+
 def create_access_token(data: dict):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -29,7 +32,6 @@ def create_access_token(data: dict):
 
 @router.post("/register", summary="Регистрация")
 async def register_user(data: UserRequestAdd):
-
     hashed_password = pwd_context.hash(data.password)
     new_user_data = UserAdd(
         name=data.name,
@@ -45,14 +47,15 @@ async def register_user(data: UserRequestAdd):
 
 
 @router.post("/login", summary="LogIn")
-async def login_user(data: UserRequestAdd):
+async def login_user(data: UserRequestAdd, response: Response):
     async with async_session_maker() as session:
-        user = await UsersRepository(session).get_one_or_none(email=data.email)
-        if user:
+        user = await UsersRepository(session).get_user_with_hashed_password(
+            email=data.email
+        )
+
+        if user and verify_password(data.password, user.hashed_password):
             access_tocken = create_access_token({"user_id": user.id})
+            response.set_cookie("access_tocken", access_tocken)
             return {"access_tocken": access_tocken}
 
-        raise HTTPException(
-            status_code=401,
-            detail="Пользователь с таким email не зарегистрирован",
-        )
+        raise HTTPException(status_code=401, detail="Неверный логин или пароль")
