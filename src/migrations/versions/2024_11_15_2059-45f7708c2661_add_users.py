@@ -1,8 +1,8 @@
 """add users
 
-Revision ID: 9ff11d5a3972
+Revision ID: 45f7708c2661
 Revises: d48ce0eab615
-Create Date: 2024-11-15 19:57:34.164706
+Create Date: 2024-11-15 20:59:06.306416
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = "9ff11d5a3972"
+revision: str = "45f7708c2661"
 down_revision: Union[str, None] = "d48ce0eab615"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,7 +26,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("email", sa.String(length=50), nullable=False),
-        sa.Column("password", sa.String(length=64), nullable=False),
+        sa.Column("hashed_password", sa.String(length=64), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
     # ### end Alembic commands ###
