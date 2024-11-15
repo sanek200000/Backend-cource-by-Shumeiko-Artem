@@ -1,12 +1,13 @@
-from sqlalchemy import delete, func, insert, literal_column, select
+from sqlalchemy import func, select
 from models.hotels import HotelsOrm
 from repositories.base import BaseRepository
 
-from db import async_session_maker, engine
+from schemas.hotels import Hotel
 
 
 class HotelsRepository(BaseRepository):
     model = HotelsOrm
+    schema = Hotel
 
     async def get_all(self, title, location, limit, offset):
 
@@ -25,4 +26,7 @@ class HotelsRepository(BaseRepository):
         print(query.compile(compile_kwargs={"literal_binds": True}))
         result = await self.session.execute(query)
 
-        return result.scalars().all()
+        return [
+            self.schema.model_validate(row, from_attributes=True)
+            for row in result.scalars().all()
+        ]
