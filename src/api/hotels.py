@@ -94,13 +94,15 @@ async def modify_hotel(hotel_id: int, hotel_data: Hotel):
     summary="Частичное обновление информации об отеле",
     description="Частичное обновление информации об отеле",
 )
-def modify_hotel(hotel_id: int, hotel_data: HotelPatch):
-    global hotels
-    hotel = [h for h in hotels if h["id"] == hotel_id][0]
-    if hotel_data.title and hotel_data.title != "":
-        hotel["title"] = hotel_data.title
-    if hotel_data.name and hotel_data.name != "":
-        hotel["name"] = hotel_data.name
+async def modify_hotel(hotel_id: int, hotel_data: HotelPatch):
+    async with async_session_maker() as session:
+        await HotelsRepository(session).edit(
+            hotel_data,
+            exclude_unset=True,
+            id=hotel_id,
+        )
+        await session.commit()
+
     return {"status": "OK"}
 
 
