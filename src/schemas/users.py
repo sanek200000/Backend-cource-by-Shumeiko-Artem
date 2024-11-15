@@ -1,21 +1,21 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 
 class UserRequestAdd(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     password: str
 
 
 class UserAdd(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     hashed_password: str
 
 
 class User(BaseModel):
     id: int
     name: str
-    email: str
+    email: EmailStr
 
     model_config = ConfigDict(from_attributes=True)
