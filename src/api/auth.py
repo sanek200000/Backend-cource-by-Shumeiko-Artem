@@ -11,7 +11,7 @@ router = APIRouter(prefix="/auth", tags=["Аутентификация и авт
 
 @router.get("/only_auth", summary="Получение токена авторизации")
 async def only_auth(request: Request):
-    access_token = request.headers.get("cookie").split("access_tocken=")[-1]
+    access_token = request.cookies.get("access_tocken")
     return {"access_token": access_token}
 
 
