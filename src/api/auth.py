@@ -10,6 +10,12 @@ from api.dependences import UserIdDep
 router = APIRouter(prefix="/auth", tags=["Аутентификация и авторизация"])
 
 
+@router.delete("/logout", summary="Выход из системы")
+async def logout(response: Response):
+    response.delete_cookie("access_tocken")
+    return {"status": "OK"}
+
+
 @router.get("/me", summary="Получение токена авторизации")
 async def get_me(user_id: UserIdDep):
 
