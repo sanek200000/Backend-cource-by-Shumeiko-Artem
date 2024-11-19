@@ -1,5 +1,7 @@
+from fastapi import HTTPException
 from pydantic import BaseModel
 from sqlalchemy import delete, insert, select, update
+import sqlalchemy.exc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db import Base
@@ -31,19 +33,28 @@ class BaseRepository:
             return self.schema.model_validate(row, from_attributes=True)
 
     async def add(self, data: BaseModel):
-        query = insert(self.model).values(**data.model_dump()).returning(self.model)
-        result = await self.session.execute(query)
+        try:
+            query = insert(self.model).values(**data.model_dump()).returning(self.model)
+            result = await self.session.execute(query)
 
-        row = result.scalars().one()
-        return self.schema.model_validate(row, from_attributes=True)
+            row = result.scalars().one()
+            return self.schema.model_validate(row, from_attributes=True)
+        except sqlalchemy.exc.IntegrityError:
+            raise HTTPException(
+                status_code=401,
+                detail="Недопустимая дупликация данных",
+            )
 
     async def edit(self, data: BaseModel, exclude_unset: bool = False, **kwargs):
-        query = (
-            update(self.model)
-            .filter_by(**kwargs)
-            .values(**data.model_dump(exclude_unset=True))
-        )
-        result = await self.session.execute(query)
+        try:
+            query = (
+                update(self.model)
+                .filter_by(**kwargs)
+                .values(**data.model_dump(exclude_unset=True))
+            )
+            await self.session.execute(query)
+        except sqlalchemy.exc.IntegrityError:
+            raise HTTPException(status_code=401, detail="Некорректные данные")
 
     async def delete(self, **kwargs):
         query = delete(self.model).filter_by(**kwargs)
