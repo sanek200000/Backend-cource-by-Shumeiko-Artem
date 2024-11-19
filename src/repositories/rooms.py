@@ -1,4 +1,3 @@
-from pydantic import BaseModel
 from sqlalchemy import select
 from models.rooms import RoomsOrm
 from repositories.base import BaseRepository
