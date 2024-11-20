@@ -1,8 +1,6 @@
 from fastapi import APIRouter, HTTPException, Response
 
-from repositories.users import UsersRepository
 from schemas.users import UserAdd, UserRequestAdd
-from db import async_session_maker
 from services.auth import AuthService
 from api.dependences import DB_DEP, UserIdDep
 

@@ -1,18 +1,14 @@
 from fastapi import Body, Query, APIRouter
 
 from api.dependences import DB_DEP, PaginationDep
-from repositories.hotels import HotelsRepository
 from schemas.hotels import HotelAdd, HotelPatch
-
-from db import async_session_maker
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
 
 @router.get("/{hotel_id}", summary="Получение информыции об отеле по его id")
-async def get_hotel_by_id(hotel_id: int):
-    async with async_session_maker() as session:
-        return await HotelsRepository(session).get_one_or_none(id=hotel_id)
+async def get_hotel_by_id(db: DB_DEP, hotel_id: int):
+    return await db.hotels.get_one_or_none(id=hotel_id)
 
 
 @router.get(

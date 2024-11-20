@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Body
 
 from api.dependences import DB_DEP
-from db import async_session_maker
 
 from repositories.rooms import RoomsRepository
 from schemas.rooms import RoomAdd, RoomAddRequest, RoomPatch, RoomPatchRequest
