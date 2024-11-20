@@ -38,6 +38,7 @@ async def get_hotel(
 
 @router.post("/", summary="Добавить отель в список")
 async def create_hotel(
+    db: DB_DEP,
     hotel_data: HotelAdd = Body(
         openapi_examples={
             "1": {
@@ -69,12 +70,11 @@ async def create_hotel(
                 },
             },
         }
-    )
+    ),
 ):
 
-    async with async_session_maker() as session:
-        hotel = await HotelsRepository(session).add(hotel_data)
-        await session.commit()
+    hotel = await db.hotels.add(hotel_data)
+    await db.commit()
 
     return {"status": "OK", "data": hotel}
 
@@ -84,10 +84,9 @@ async def create_hotel(
     summary="Обновление информации об отеле",
     description="Обновление информации об отеле",
 )
-async def modify_hotel(hotel_id: int, hotel_data: HotelAdd):
-    async with async_session_maker() as session:
-        await HotelsRepository(session).edit(hotel_data, id=hotel_id)
-        await session.commit()
+async def modify_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelAdd):
+    await db.hotels.edit(hotel_data, id=hotel_id)
+    await db.commit()
 
     return {"status": "OK"}
 
@@ -97,14 +96,9 @@ async def modify_hotel(hotel_id: int, hotel_data: HotelAdd):
     summary="Частичное обновление информации об отеле",
     description="Частичное обновление информации об отеле",
 )
-async def modify_hotel(hotel_id: int, hotel_data: HotelPatch):
-    async with async_session_maker() as session:
-        await HotelsRepository(session).edit(
-            hotel_data,
-            exclude_unset=True,
-            id=hotel_id,
-        )
-        await session.commit()
+async def modify_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelPatch):
+    await db.hotels.edit(hotel_data, exclude_unset=True, id=hotel_id)
+    await db.commit()
 
     return {"status": "OK"}
 
@@ -114,9 +108,8 @@ async def modify_hotel(hotel_id: int, hotel_data: HotelPatch):
     summary="Удаление информации об отеле из БД",
     description="Удаление информации об отеле из БД",
 )
-async def delete_hotel(hotel_id: int):
-    async with async_session_maker() as session:
-        await HotelsRepository(session).delete(id=hotel_id)
-        await session.commit()
+async def delete_hotel(db: DB_DEP, hotel_id: int):
+    await db.hotels.delete(id=hotel_id)
+    await db.commit()
 
     return {"status": "OK"}

@@ -1,3 +1,4 @@
+from sqlalchemy.orm import Session
 from repositories.hotels import HotelsRepository
 from repositories.rooms import RoomsRepository
 from repositories.users import UsersRepository
@@ -8,7 +9,7 @@ class DBManager:
         self.session_factory = session_factory
 
     async def __aenter__(self):
-        self.session = self.session_factory()
+        self.session: Session = self.session_factory()
 
         self.hotels = HotelsRepository(self.session)
         self.rooms = RoomsRepository(self.session)
