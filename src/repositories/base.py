@@ -5,7 +5,6 @@ import sqlalchemy.exc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db import Base
-from schemas.hotels import Hotel
 
 
 class BaseRepository:
@@ -15,14 +14,14 @@ class BaseRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def get_all(self):
-        query = select(self.model)
+    async def get_filtred(self, **kwargs):
+        query = select(self.model).filter_by(**kwargs)
         result = await self.session.execute(query)
 
-        return [
-            self.schema.model_validate(row, from_attributes=True)
-            for row in result.scalars().all()
-        ]
+        return [self.schema.model_validate(row) for row in result.scalars().all()]
+
+    async def get_all(self):
+        return await self.get_filtred()
 
     async def get_one_or_none(self, **kwargs):
         query = select(self.model).filter_by(**kwargs)
@@ -50,7 +49,7 @@ class BaseRepository:
             query = (
                 update(self.model)
                 .filter_by(**kwargs)
-                .values(**data.model_dump(exclude_unset=True))
+                .values(**data.model_dump(exclude_unset=exclude_unset))
             )
             await self.session.execute(query)
         except sqlalchemy.exc.IntegrityError:
