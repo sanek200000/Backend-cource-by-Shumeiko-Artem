@@ -7,10 +7,10 @@ from alembic import context
 
 from conf import settings
 from db import Base
+from models.bookings import BookingsOrm
 from models.hotels import HotelsOrm
 from models.rooms import RoomsOrm
 from models.users import UsersOrm
-
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
