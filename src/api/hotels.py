@@ -1,6 +1,6 @@
 from fastapi import Body, Query, APIRouter
 
-from api.dependences import PaginationDep
+from api.dependences import DB_DEP, PaginationDep
 from repositories.hotels import HotelsRepository
 from schemas.hotels import HotelAdd, HotelPatch
 
@@ -22,18 +22,18 @@ async def get_hotel_by_id(hotel_id: int):
 )
 async def get_hotel(
     pgntn: PaginationDep,
+    db: DB_DEP,
     title: str | None = Query(None, description="Название отеля"),
     location: str | None = Query(None, description="Адрес отеля"),
 ):
-
     per_page = pgntn.per_page or 5
-    async with async_session_maker() as session:
-        return await HotelsRepository(session).get_all(
-            title=title,
-            location=location,
-            limit=per_page,
-            offset=per_page * (pgntn.page - 1),
-        )
+
+    return await db.hotels.get_all(
+        title=title,
+        location=location,
+        limit=per_page,
+        offset=per_page * (pgntn.page - 1),
+    )
 
 
 @router.post("/", summary="Добавить отель в список")
