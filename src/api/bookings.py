@@ -26,7 +26,7 @@ async def create_booking(
             "1": {
                 "summary": "Бронирование1",
                 "value": {
-                    "room_id": "7",
+                    "room_id": 7,
                     "date_from": "2024-11-01",
                     "date_to": "2024-11-10",
                 },
@@ -34,7 +34,7 @@ async def create_booking(
             "2": {
                 "summary": "Бронирование2",
                 "value": {
-                    "room_id": "7",
+                    "room_id": 7,
                     "date_from": "2024-10-25",
                     "date_to": "2024-11-05",
                 },
@@ -42,7 +42,7 @@ async def create_booking(
             "3": {
                 "summary": "Бронирование3",
                 "value": {
-                    "room_id": "7",
+                    "room_id": 7,
                     "date_from": "2024-11-09",
                     "date_to": "2024-11-20",
                 },
