@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, Body, HTTPException, Response
 
 from schemas.users import UserAdd, UserRequestAdd
 from services.auth import AuthService
@@ -21,7 +21,37 @@ async def get_me(db: DB_DEP, user_id: UserIdDep):
 
 
 @router.post("/register", summary="Регистрация")
-async def register_user(db: DB_DEP, data: UserRequestAdd):
+async def register_user(
+    db: DB_DEP,
+    data: UserRequestAdd = Body(
+        openapi_examples={
+            "1": {
+                "summary": "user1",
+                "value": {
+                    "name": "user1",
+                    "email": "user1@example.com",
+                    "password": "password",
+                },
+            },
+            "2": {
+                "summary": "user2",
+                "value": {
+                    "name": "user2",
+                    "email": "user2@example.com",
+                    "password": "password",
+                },
+            },
+            "3": {
+                "summary": "user3",
+                "value": {
+                    "name": "user3",
+                    "email": "user3@example.com",
+                    "password": "password",
+                },
+            },
+        }
+    ),
+):
     hashed_password = AuthService().pwd_context.hash(data.password)
     new_user_data = UserAdd(
         name=data.name,
@@ -36,7 +66,38 @@ async def register_user(db: DB_DEP, data: UserRequestAdd):
 
 
 @router.post("/login", summary="LogIn")
-async def login_user(db: DB_DEP, data: UserRequestAdd, response: Response):
+async def login_user(
+    db: DB_DEP,
+    response: Response,
+    data: UserRequestAdd = Body(
+        openapi_examples={
+            "1": {
+                "summary": "user1",
+                "value": {
+                    "name": "user1",
+                    "email": "user1@example.com",
+                    "password": "password",
+                },
+            },
+            "2": {
+                "summary": "user2",
+                "value": {
+                    "name": "user2",
+                    "email": "user2@example.com",
+                    "password": "password",
+                },
+            },
+            "3": {
+                "summary": "user3",
+                "value": {
+                    "name": "user3",
+                    "email": "user3@example.com",
+                    "password": "password",
+                },
+            },
+        }
+    ),
+):
     user = await db.users.get_user_with_hashed_password(email=data.email)
 
     if user and AuthService().verify_password(data.password, user.hashed_password):

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Body, HTTPException
 
 from api.dependences import DB_DEP, UserIdDep
 from schemas.bookings import BookingAdd, BookingAddRequest
@@ -20,8 +20,35 @@ async def get_all_bookings(db: DB_DEP, user_id: UserIdDep):
 @router.post("/", summary="Добавить бронирование")
 async def create_booking(
     db: DB_DEP,
-    booking_data: BookingAddRequest,
     user_id: UserIdDep,
+    booking_data: BookingAddRequest = Body(
+        openapi_examples={
+            "1": {
+                "summary": "Бронирование1",
+                "value": {
+                    "room_id": "7",
+                    "date_from": "2024-11-01",
+                    "date_to": "2024-11-10",
+                },
+            },
+            "2": {
+                "summary": "Бронирование2",
+                "value": {
+                    "room_id": "7",
+                    "date_from": "2024-10-25",
+                    "date_to": "2024-11-05",
+                },
+            },
+            "3": {
+                "summary": "Бронирование3",
+                "value": {
+                    "room_id": "7",
+                    "date_from": "2024-11-09",
+                    "date_to": "2024-11-20",
+                },
+            },
+        }
+    ),
 ):
     try:
         room = await db.rooms.get_one_or_none(id=booking_data.room_id)
