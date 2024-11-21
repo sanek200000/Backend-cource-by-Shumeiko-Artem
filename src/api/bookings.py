@@ -12,6 +12,11 @@ async def get_all_bookings(db: DB_DEP):
     return await db.bookings.get_all()
 
 
+@router.get("/me", summary="Посмотреть мои бронирования")
+async def get_all_bookings(db: DB_DEP, user_id: UserIdDep):
+    return await db.bookings.get_filtred(user_id=user_id)
+
+
 @router.post("/", summary="Добавить бронирование")
 async def create_booking(
     db: DB_DEP,
