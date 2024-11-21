@@ -14,8 +14,8 @@ class BaseRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def get_filtred(self, **kwargs):
-        query = select(self.model).filter_by(**kwargs)
+    async def get_filtred(self, *args, **kwargs):
+        query = select(self.model).filter(*args).filter_by(**kwargs)
         print(query.compile(compile_kwargs={"literal_binds": True}))
         result = await self.session.execute(query)
 
