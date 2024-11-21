@@ -34,6 +34,7 @@ class BaseRepository:
     async def add(self, data: BaseModel):
         try:
             query = insert(self.model).values(**data.model_dump()).returning(self.model)
+            print(query.compile(compile_kwargs={"literal_binds": True}))
             result = await self.session.execute(query)
 
             row = result.scalars().one()
