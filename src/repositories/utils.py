@@ -2,6 +2,7 @@ from datetime import date
 
 from sqlalchemy import func, select
 from models.bookings import BookingsOrm
+from models.hotels import HotelsOrm
 from models.rooms import RoomsOrm
 
 
@@ -9,6 +10,8 @@ def rooms_ids_for_booking(
     date_from: date,
     date_to: date,
     hotel_id: int | None = None,
+    limit: int | None = None,
+    offset: int | None = None,
 ):
     """
     with rooms_count as (
@@ -59,6 +62,8 @@ def rooms_ids_for_booking(
             rooms_left_table.c.room_id.in_(rooms_ids_for_hotel),
         )
     )
+
+    query = query.limit(limit).offset(offset)
 
     print(query.compile(compile_kwargs={"literal_binds": True}))
 
