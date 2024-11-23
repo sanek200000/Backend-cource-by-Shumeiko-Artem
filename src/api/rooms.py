@@ -73,15 +73,28 @@ async def create_room(
         RoomsFacilityAdd(room_id=room.id, facility_id=f_id)
         for f_id in room_data.facilities_ids
     ]
+
     await db.rooms_facilities.add_bulk(rooms_facilities_data)
     await db.commit()
 
     return {"status": "OK", "data": room}
 
 
+# TODO: Здесь работаем!!!
 @router.put("/{room_id}", summary="Обновление информации о номерах")
-async def modify_room(db: DB_DEP, room_id: int, room_data: RoomAdd):
+async def modify_room(
+    db: DB_DEP,
+    room_id: int,
+    room_data: RoomAdd,
+    facilities_ids: list[int],
+):
     await db.rooms.edit(room_data, id=room_id)
+    await db.rooms_facilities.edit(
+        db=db,
+        room_id=room_id,
+        facilities_ids=facilities_ids,
+    )
+
     await db.commit()
 
     return {"status": "OK"}
@@ -89,7 +102,11 @@ async def modify_room(db: DB_DEP, room_id: int, room_data: RoomAdd):
 
 @router.patch("/{room_id}", summary="Частичное обновление информации о номерах")
 async def modify_room(
-    db: DB_DEP, hotel_id: int, room_title: str, room_data: RoomPatchRequest
+    db: DB_DEP,
+    hotel_id: int,
+    room_id: str,
+    room_data: RoomPatchRequest,
+    facilities_ids: list[int],
 ):
     _room_data = RoomPatch(
         hotel_id=hotel_id,
@@ -100,7 +117,12 @@ async def modify_room(
         _room_data,
         exclude_unset=True,
         hotel_id=hotel_id,
-        title=room_title,
+        id=room_id,
+    )
+    await db.rooms_facilities.edit(
+        db=db,
+        room_id=room_id,
+        facilities_ids=facilities_ids,
     )
     await db.commit()
 

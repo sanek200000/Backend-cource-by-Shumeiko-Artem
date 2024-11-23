@@ -61,6 +61,14 @@ class BaseRepository:
         except sqlalchemy.exc.IntegrityError:
             raise HTTPException(status_code=401, detail="Некорректные данные")
 
+    async def edit_bulk(self, data: BaseModel, exclude_unset: bool = False, **kwargs):
+        query = (
+            update(self.model)
+            .filter_by(**kwargs)
+            .values([item.model_dump(exclude_unset=exclude_unset) for item in data])
+        )
+        await self.session.execute(query)
+
     async def delete(self, **kwargs):
         query = delete(self.model).filter_by(**kwargs)
         await self.session.execute(query)
