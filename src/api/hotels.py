@@ -7,16 +7,12 @@ from schemas.hotels import HotelAdd, HotelPatch
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
 
-@router.get("/{hotel_id}", summary="Получение информыции об отеле по его id")
-async def get_hotel_by_id(db: DB_DEP, hotel_id: int):
-    return await db.hotels.get_one_or_none(id=hotel_id)
+@router.get("/", summary="Получение список отелей")
+async def get_hotel_by_id(db: DB_DEP):
+    return await db.hotels.get_all()
 
 
-@router.get(
-    "",
-    summary="Получить информацию об отеле",
-    description="Получить информацию об отеле по его id или названию",
-)
+@router.get("/{hotel_id}", summary="Получить информацию об отеле")
 async def get_hotel(
     pgntn: PaginationDep,
     db: DB_DEP,

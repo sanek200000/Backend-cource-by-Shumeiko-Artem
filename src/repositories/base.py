@@ -46,6 +46,10 @@ class BaseRepository:
                 detail="Недопустимая дупликация данных",
             )
 
+    async def add_bulk(self, data: list[BaseModel]):
+        query = insert(self.model).values([item.model_dump() for item in data])
+        await self.session.execute(query)
+
     async def edit(self, data: BaseModel, exclude_unset: bool = False, **kwargs):
         try:
             query = (
