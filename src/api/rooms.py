@@ -80,19 +80,19 @@ async def create_room(
     return {"status": "OK", "data": room}
 
 
-# TODO: Здесь работаем!!!
 @router.put("/{room_id}", summary="Обновление информации о номерах")
 async def modify_room(
     db: DB_DEP,
+    hotel_id: int,
     room_id: int,
-    room_data: RoomAdd,
-    facilities_ids: list[int],
+    room_data: RoomAddRequest,
 ):
-    await db.rooms.edit(room_data, id=room_id)
+    _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
+    await db.rooms.edit(_room_data, id=room_id)
     await db.rooms_facilities.edit(
         db=db,
         room_id=room_id,
-        facilities_ids=facilities_ids,
+        facilities_ids=room_data.facilities_ids,
     )
 
     await db.commit()
@@ -104,14 +104,14 @@ async def modify_room(
 async def modify_room(
     db: DB_DEP,
     hotel_id: int,
-    room_id: str,
+    room_id: int,
     room_data: RoomPatchRequest,
-    facilities_ids: list[int],
 ):
     _room_data = RoomPatch(
         hotel_id=hotel_id,
         **room_data.model_dump(exclude_unset=True),
     )
+    _room_data_dict = room_data.model_dump(exclude_unset=True)
 
     await db.rooms.edit(
         _room_data,
@@ -119,11 +119,13 @@ async def modify_room(
         hotel_id=hotel_id,
         id=room_id,
     )
-    await db.rooms_facilities.edit(
-        db=db,
-        room_id=room_id,
-        facilities_ids=facilities_ids,
-    )
+
+    if "facilities_ids" in _room_data_dict:
+        await db.rooms_facilities.edit(
+            db=db,
+            room_id=room_id,
+            facilities_ids=room_data.facilities_ids,
+        )
     await db.commit()
 
     return {"status": "OK"}

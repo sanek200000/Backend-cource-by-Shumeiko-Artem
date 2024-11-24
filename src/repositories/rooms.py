@@ -1,8 +1,3 @@
-from datetime import date
-
-from sqlalchemy import func, select
-from sqlalchemy.sql.functions import count
-from models.bookings import BookingsOrm
 from models.rooms import RoomsOrm
 from repositories.base import BaseRepository
 from repositories.utils import rooms_ids_for_booking

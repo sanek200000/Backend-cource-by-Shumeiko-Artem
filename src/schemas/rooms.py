@@ -2,7 +2,6 @@ from pydantic import BaseModel, ConfigDict
 
 
 class RoomAdd(BaseModel):
-    hotel_id: int
     title: str
     description: str | None = None
     price: int
@@ -14,7 +13,7 @@ class RoomAddRequest(BaseModel):
     description: str | None = None
     price: int
     quantity: int
-    facilities_ids: list[int] | None = None
+    facilities_ids: list[int] = []
 
 
 class Room(RoomAdd):
@@ -35,3 +34,4 @@ class RoomPatchRequest(BaseModel):
     description: str | None = None
     price: int | None = None
     quantity: int | None = None
+    facilities_ids: list[int] = []

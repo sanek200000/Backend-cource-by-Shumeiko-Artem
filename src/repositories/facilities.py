@@ -14,9 +14,10 @@ class RoomsFacilitiesRepository(BaseRepository):
 
     async def edit(self, db, room_id, facilities_ids):
         current_facilities = set(
-            f.id for f in await db.rooms_facilities.get_filtred(room_id=room_id)
+            f.facility_id
+            for f in await db.rooms_facilities.get_filtred(room_id=room_id)
         )
-        new_facilities = set(f_id for f_id in facilities_ids)
+        new_facilities = set(facilities_ids)
 
         to_add = new_facilities - current_facilities
         to_remove = current_facilities - new_facilities
