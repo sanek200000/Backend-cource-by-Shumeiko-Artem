@@ -3,13 +3,13 @@ from models.hotels import HotelsOrm
 from models.rooms import RoomsOrm
 from repositories.base import BaseRepository
 
+from repositories.mappers.mappers import HotelDataMapper
 from repositories.utils import rooms_ids_for_booking
-from schemas.hotels import Hotel
 
 
 class HotelsRepository(BaseRepository):
     model = HotelsOrm
-    schema = Hotel
+    mapper = HotelDataMapper
 
     async def get_filtred_by_time(
         self,

@@ -5,11 +5,12 @@ import sqlalchemy.exc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db import Base
+from repositories.mappers.base import DataMapper
 
 
 class BaseRepository:
     model: Base = None
-    schema: BaseModel = None
+    mapper: DataMapper
 
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
@@ -19,7 +20,9 @@ class BaseRepository:
         print(query.compile(compile_kwargs={"literal_binds": True}))
         result = await self.session.execute(query)
 
-        return [self.schema.model_validate(row) for row in result.scalars().all()]
+        return [
+            self.mapper.map_to_domain_entity(data=row) for row in result.scalars().all()
+        ]
 
     async def get_all(self):
         return await self.get_filtred()
@@ -30,7 +33,7 @@ class BaseRepository:
 
         row = result.scalars().one_or_none()
         if row:
-            return self.schema.model_validate(row, from_attributes=True)
+            return self.mapper.map_to_domain_entity(row, from_attributes=True)
 
     async def add(self, data: BaseModel):
         try:
@@ -39,7 +42,7 @@ class BaseRepository:
             result = await self.session.execute(query)
 
             row = result.scalars().one()
-            return self.schema.model_validate(row, from_attributes=True)
+            return self.mapper.map_to_domain_entity(row, from_attributes=True)
         except sqlalchemy.exc.IntegrityError:
             raise HTTPException(
                 status_code=401,
