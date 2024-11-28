@@ -33,7 +33,7 @@ class BaseRepository:
 
         row = result.scalars().one_or_none()
         if row:
-            return self.mapper.map_to_domain_entity(row, from_attributes=True)
+            return self.mapper.map_to_domain_entity(row)
 
     async def add(self, data: BaseModel):
         try:
@@ -42,7 +42,7 @@ class BaseRepository:
             result = await self.session.execute(query)
 
             row = result.scalars().one()
-            return self.mapper.map_to_domain_entity(row, from_attributes=True)
+            return self.mapper.map_to_domain_entity(row)
         except sqlalchemy.exc.IntegrityError:
             raise HTTPException(
                 status_code=401,

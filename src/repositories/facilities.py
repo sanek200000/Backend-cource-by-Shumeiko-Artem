@@ -1,16 +1,17 @@
 from models.facilities import FacilitiesOrm, RoomsFacilitiesOrm
 from repositories.base import BaseRepository
-from schemas.facilities import Facility, RoomsFacility, RoomsFacilityAdd
+from repositories.mappers.mappers import FacilityDataMapper
+from schemas.facilities import Facility, RoomsFacilityAdd
 
 
 class FacilitiesRepository(BaseRepository):
     model = FacilitiesOrm
-    schema = Facility
+    mapper = FacilityDataMapper
 
 
 class RoomsFacilitiesRepository(BaseRepository):
     model = RoomsFacilitiesOrm
-    schema = RoomsFacility
+    mapper = FacilityDataMapper
 
     async def edit(self, db, room_id, facilities_ids):
         current_facilities = set(
