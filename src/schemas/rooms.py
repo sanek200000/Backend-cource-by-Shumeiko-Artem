@@ -4,6 +4,7 @@ from schemas.facilities import Facility
 
 
 class RoomAdd(BaseModel):
+    hotel_id: int
     title: str
     description: str | None = None
     price: int
