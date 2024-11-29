@@ -5,7 +5,6 @@ __pycache__/
 
 # my
 *src/requirements.txt
-*/.vscode
 *temp.ipynb
 
 # C extensions

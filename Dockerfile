@@ -11,8 +11,5 @@ RUN apt-get update && \
     pip install -r /temp/requirements.txt && \
     useradd -m service-user && \
     rm -rf /var/lib/apt/lists/* 
-#apt-get install -y locales && \
-#locale-gen ru_RU.UTF-8 && \
-#update-locale LANG=ru_RU.UTF-8 && \
 
 USER service-user
