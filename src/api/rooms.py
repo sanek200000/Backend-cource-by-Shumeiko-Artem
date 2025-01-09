@@ -5,6 +5,7 @@ from api.dependences import DB_DEP
 
 from schemas.facilities import RoomsFacilityAdd
 from schemas.rooms import RoomAdd, RoomAddRequest, RoomPatch, RoomPatchRequest
+from utils.openapi_examples import RoomsOE
 
 
 router = APIRouter(prefix="/hotels/{hotel_id}/rooms", tags=["Нумера"])
@@ -33,43 +34,7 @@ async def get_room(hotel_id: int, room_id: int, db: DB_DEP):
 async def create_room(
     db: DB_DEP,
     hotel_id: int,
-    room_data: RoomAddRequest = Body(
-        openapi_examples={
-            "1": {
-                "summary": "standart",
-                "value": {
-                    "hotel_id": 0,
-                    "title": "standart",
-                    "description": "sfsdfsdf sdfsdf sdfsdf sdfsdf",
-                    "price": 10,
-                    "quantity": 10,
-                    "facilities_ids": [1, 2],
-                },
-            },
-            "2": {
-                "summary": "comfort",
-                "value": {
-                    "hotel_id": 0,
-                    "title": "comfort",
-                    "description": "sfsdfsdf sdfsdf sdfsdf sdfsdf",
-                    "price": 100,
-                    "quantity": 5,
-                    "facilities_ids": [2, 3],
-                },
-            },
-            "3": {
-                "summary": "luxe",
-                "value": {
-                    "hotel_id": 0,
-                    "title": "luxe",
-                    "description": "sfsdfsdf sdfsdf sdfsdf sdfsdf",
-                    "price": 1000,
-                    "quantity": 1,
-                    "facilities_ids": [1, 3],
-                },
-            },
-        }
-    ),
+    room_data: RoomAddRequest = Body(openapi_examples=RoomsOE.create),
 ):
     _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
     room = await db.rooms.add(_room_data)

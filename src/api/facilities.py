@@ -2,6 +2,7 @@ from fastapi import APIRouter, Body
 
 from api.dependences import DB_DEP
 from schemas.facilities import FacilitiesAdd
+from utils.openapi_examples import FacilitiesOE
 
 
 router = APIRouter(prefix="/facilities", tags=["Удобства в номерах"])
@@ -15,28 +16,7 @@ async def get_all_facilities(db: DB_DEP):
 @router.post("/", summary="Добавить вид удобства")
 async def create_facility(
     db: DB_DEP,
-    facility_data: FacilitiesAdd = Body(
-        openapi_examples={
-            "1": {
-                "summary": "Internet",
-                "value": {
-                    "title": "WiFi",
-                },
-            },
-            "2": {
-                "summary": "Жакузя",
-                "value": {
-                    "title": "Жакузя",
-                },
-            },
-            "3": {
-                "summary": "Туалет",
-                "value": {
-                    "title": "Туалет",
-                },
-            },
-        }
-    ),
+    facility_data: FacilitiesAdd = Body(openapi_examples=FacilitiesOE.create),
 ):
     facility = await db.facilities.add(facility_data)
     await db.commit()

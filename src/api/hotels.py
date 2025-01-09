@@ -3,6 +3,7 @@ from fastapi import Body, Query, APIRouter
 
 from api.dependences import DB_DEP, PaginationDep
 from schemas.hotels import HotelAdd, HotelPatch
+from utils.openapi_examples import HotelsOE
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
@@ -36,38 +37,7 @@ async def get_hotel(
 @router.post("/", summary="Добавить отель в список")
 async def create_hotel(
     db: DB_DEP,
-    hotel_data: HotelAdd = Body(
-        openapi_examples={
-            "1": {
-                "summary": "Сочи1",
-                "value": {
-                    "title": "Атрия",
-                    "location": "Адлерский район, улица Мира, д.44 а, Сочи",
-                },
-            },
-            "2": {
-                "summary": "Сочи2",
-                "value": {
-                    "title": "Радуга-Престиж",
-                    "location": "Краснодарский край, г. Сочи, ул. Пирогова, д. 2/3",
-                },
-            },
-            "3": {
-                "summary": "Дубай1",
-                "value": {
-                    "title": "Отель Al Khoory Executive Hotel",
-                    "location": "Al Wasl Area, Dubai, Дубай",
-                },
-            },
-            "4": {
-                "summary": "Дубай2",
-                "value": {
-                    "title": "Holiday Inn Express Dubai Internet City an IHG Hotel",
-                    "location": "Knowledge Village Pob 282647, Дубай",
-                },
-            },
-        }
-    ),
+    hotel_data: HotelAdd = Body(openapi_examples=HotelsOE.create),
 ):
 
     hotel = await db.hotels.add(hotel_data)

@@ -3,6 +3,7 @@ from fastapi import APIRouter, Body, HTTPException, Response
 from schemas.users import UserAdd, UserRequestAdd
 from services.auth import AuthService
 from api.dependences import DB_DEP, UserIdDep
+from utils.openapi_examples import AuthOE
 
 
 router = APIRouter(prefix="/auth", tags=["Аутентификация и авторизация"])
@@ -22,35 +23,7 @@ async def get_me(db: DB_DEP, user_id: UserIdDep):
 
 @router.post("/register", summary="Регистрация")
 async def register_user(
-    db: DB_DEP,
-    data: UserRequestAdd = Body(
-        openapi_examples={
-            "1": {
-                "summary": "user1",
-                "value": {
-                    "name": "user1",
-                    "email": "user1@example.com",
-                    "password": "password",
-                },
-            },
-            "2": {
-                "summary": "user2",
-                "value": {
-                    "name": "user2",
-                    "email": "user2@example.com",
-                    "password": "password",
-                },
-            },
-            "3": {
-                "summary": "user3",
-                "value": {
-                    "name": "user3",
-                    "email": "user3@example.com",
-                    "password": "password",
-                },
-            },
-        }
-    ),
+    db: DB_DEP, data: UserRequestAdd = Body(openapi_examples=AuthOE.register)
 ):
     hashed_password = AuthService().pwd_context.hash(data.password)
     new_user_data = UserAdd(
@@ -69,34 +42,7 @@ async def register_user(
 async def login_user(
     db: DB_DEP,
     response: Response,
-    data: UserRequestAdd = Body(
-        openapi_examples={
-            "1": {
-                "summary": "user1",
-                "value": {
-                    "name": "user1",
-                    "email": "user1@example.com",
-                    "password": "password",
-                },
-            },
-            "2": {
-                "summary": "user2",
-                "value": {
-                    "name": "user2",
-                    "email": "user2@example.com",
-                    "password": "password",
-                },
-            },
-            "3": {
-                "summary": "user3",
-                "value": {
-                    "name": "user3",
-                    "email": "user3@example.com",
-                    "password": "password",
-                },
-            },
-        }
-    ),
+    data: UserRequestAdd = Body(openapi_examples=AuthOE.login),
 ):
     user = await db.users.get_user_with_hashed_password(email=data.email)
 
