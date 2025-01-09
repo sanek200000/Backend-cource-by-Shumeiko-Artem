@@ -39,6 +39,4 @@ class RoomsRepository(BaseRepository):
 
         row = result.scalars().one_or_none()
         if row:
-            return RoomDataWithRelsMapper.map_to_domain_entity(
-                row, from_attributes=True
-            )
+            return RoomDataWithRelsMapper.map_to_domain_entity(row)

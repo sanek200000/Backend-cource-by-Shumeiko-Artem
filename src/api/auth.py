@@ -9,12 +9,6 @@ from utils.openapi_examples import AuthOE
 router = APIRouter(prefix="/auth", tags=["Аутентификация и авторизация"])
 
 
-@router.delete("/logout", summary="Выход из системы")
-async def logout(response: Response):
-    response.delete_cookie("access_tocken")
-    return {"status": "OK"}
-
-
 @router.get("/me", summary="Получение токена авторизации")
 async def get_me(db: DB_DEP, user_id: UserIdDep):
 
@@ -52,3 +46,9 @@ async def login_user(
         return {"access_tocken": access_tocken}
 
     raise HTTPException(status_code=401, detail="Неверный логин или пароль")
+
+
+@router.post("/logout", summary="Выход из системы")
+async def logout(response: Response):
+    response.delete_cookie("access_tocken")
+    return {"status": "OK"}
