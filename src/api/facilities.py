@@ -1,5 +1,7 @@
 import json
 from fastapi import APIRouter, Body
+from fastapi_cache.decorator import cache
+
 
 from api.dependences import DB_DEP
 from schemas.facilities import FacilitiesAdd
@@ -10,21 +12,25 @@ router = APIRouter(prefix="/facilities", tags=["Удобства в номера
 
 
 @router.get("/", summary="Посмотреть список удобств")
+@cache(expire=10)
 async def get_all_facilities(db: DB_DEP):
-    facilities_from_cache = await redis_manager.get("facilities")
-    print(f"{facilities_from_cache = }")
+    print("ИДУ В БАЗУ")
+    return await db.facilities.get_all()
 
-    if not facilities_from_cache:
-        print("ИДУ В БАЗУ")
-        facilities = await db.facilities.get_all()
-        facilities_schema = [f.model_dump() for f in facilities]
-        facilities_json = json.dumps(facilities_schema)
-        await redis_manager.set("facilities", facilities_json, 10)
+    # facilities_from_cache = await redis_manager.get("facilities")
+    # print(f"{facilities_from_cache = }")
 
-        return facilities
-    else:
-        facilities_dicts = json.loads(facilities_from_cache)
-        return facilities_dicts
+    # if not facilities_from_cache:
+    #    print("ИДУ В БАЗУ")
+    #    facilities = await db.facilities.get_all()
+    #    facilities_schema = [f.model_dump() for f in facilities]
+    #    facilities_json = json.dumps(facilities_schema)
+    #    await redis_manager.set("facilities", facilities_json, 10)
+
+    #    return facilities
+    # else:
+    #    facilities_dicts = json.loads(facilities_from_cache)
+    #    return facilities_dicts
 
 
 @router.post("/", summary="Добавить вид удобства")

@@ -1,6 +1,9 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+
 from api.auth import router as router_auth
 from api.hotels import router as router_hotels
 from api.rooms import router as router_rooms
@@ -15,6 +18,7 @@ from init import redis_manager
 async def lifespan(app: FastAPI):
     # При старте
     await redis_manager.connect()
+    FastAPICache.init(RedisBackend(redis_manager.client), prefix="fastapi-cache")
 
     yield
 
