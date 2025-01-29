@@ -9,6 +9,7 @@ from api.hotels import router as router_hotels
 from api.rooms import router as router_rooms
 from api.bookings import router as router_bookings
 from api.facilities import router as router_facilities
+from api.images import router as router_images
 from utils.openapi_examples import AuthOE
 
 from init import redis_manager
@@ -33,6 +34,7 @@ app.include_router(router_hotels)
 app.include_router(router_rooms)
 app.include_router(router_bookings)
 app.include_router(router_facilities)
+app.include_router(router_images)
 
 if __name__ == "__main__":
     import uvicorn

@@ -6,6 +6,8 @@ __pycache__/
 # my
 *src/requirements.txt
 *temp.ipynb
+src/static/images/*
+!src/static/images/.gitkeep
 
 # C extensions
 *.so
