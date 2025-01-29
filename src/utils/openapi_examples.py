@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from typing import Any
 
 
@@ -65,24 +66,24 @@ class BookingOE:
             "summary": "Бронирование1",
             "value": {
                 "room_id": 1,
-                "date_from": "2025-11-01",
-                "date_to": "2025-11-10",
+                "date_from": date.today(),
+                "date_to": date.today() + timedelta(days=5),
             },
         },
         "2": {
             "summary": "Бронирование2",
             "value": {
                 "room_id": 1,
-                "date_from": "2025-10-25",
-                "date_to": "2025-11-05",
+                "date_from": date.today(),
+                "date_to": date.today() + timedelta(days=10),
             },
         },
         "3": {
             "summary": "Бронирование3",
             "value": {
                 "room_id": 1,
-                "date_from": "2025-11-09",
-                "date_to": "2025-11-20",
+                "date_from": date.today(),
+                "date_to": date.today() + timedelta(days=15),
             },
         },
     }

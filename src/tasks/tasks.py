@@ -1,8 +1,12 @@
+import asyncio
 import os
 from time import sleep
 from PIL import Image
 
+from api import bookings
+from db import ASYNC_SESSION_MAKER_NULL_POOL
 from tasks.celery_app import celery_instance
+from utils.db_manager import DBManager
 
 
 @celery_instance.task
@@ -31,3 +35,15 @@ def resize_image(input_image_path: str):
             output_path = os.path.join(output_directory, f"image_{width}.jpg")
             resized_image.save(output_path)
             print(f"Изображение сохранено: {output_path}")
+
+
+async def get_bookings_with_today_chechin_helper():
+    print("я `get_bookings_with_today_chechin_helper` запускаюсь")
+    async with DBManager(session_factory=ASYNC_SESSION_MAKER_NULL_POOL) as db:
+        bookings = await db.bookings.get_bookings_with_today_checin()
+        print(f"{bookings}")
+
+
+@celery_instance.task(name="booking_today_checkin")
+def send_emails_to_users_with_today_checkin():
+    asyncio.run(get_bookings_with_today_chechin_helper())
