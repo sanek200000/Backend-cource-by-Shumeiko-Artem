@@ -9,3 +9,4 @@ PyJWT==2.9.0
 passlib[bcrypt]==1.7.4
 redis==5.0.8
 fastapi-cache2==0.2.2
+celery==5.4.0

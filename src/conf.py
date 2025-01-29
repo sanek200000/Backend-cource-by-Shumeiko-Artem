@@ -9,6 +9,10 @@ class Settings(BaseSettings):
     DB_PORT: int
 
     @property
+    def REDIS_URL(self):
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
+
+    @property
     def DB_URL(self) -> str:
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
@@ -27,3 +31,4 @@ if __name__ == "__main__":
     print("Environments:")
     [print(f"\t{k} = {v}") for k, v in settings]
     print(f"\tDB_URL = {settings.DB_URL}")
+    print(f"\tDB_URL = {settings.REDIS_URL}")
