@@ -34,10 +34,10 @@ services:
     env_file:
       - path: ./test.env
         required: true
-    #environment:
-    #  POSTGRES_DB: ${DB_NAME}
-    #  POSTGRES_USER: ${DB_USER}
-    #  POSTGRES_PASSWORD: ${DB_PASS}
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
       - pg_data_booking:/var/lib/postgresql/data
     ports:
