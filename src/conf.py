@@ -3,8 +3,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    # MODE: Literal["TEST", "LOCAL", "DEV", "PROD"]
-    MODE: str
+    MODE: Literal["TEST", "LOCAL", "DEV", "PROD"]
 
     DB_HOST: str
     DB_NAME: str

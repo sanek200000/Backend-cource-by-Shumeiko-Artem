@@ -3,17 +3,20 @@ services:
     build:
       context: .
     container_name: web-app
-    environment:
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - DB_PORT=${DB_PORT}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - JWT_ALGORITHM=${JWT_ALGORITHM}
-      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
+    env_file:
+      - path: ./dev.env
+        required: true
+    #environment:
+    #  - DB_HOST=${DB_HOST}
+    #  - DB_NAME=${DB_NAME}
+    #  - DB_USER=${DB_USER}
+    #  - DB_PASS=${DB_PASS}
+    #  - DB_PORT=${DB_PORT}
+    #  - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+    #  - JWT_ALGORITHM=${JWT_ALGORITHM}
+    #  - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+    #  - REDIS_HOST=${REDIS_HOST}
+    #  - REDIS_PORT=${REDIS_PORT}
     depends_on:
       - postgres
       - redis
@@ -27,21 +30,27 @@ services:
   postgres:
     image: postgres:13-alpine
     container_name: postgres
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
+    env_file:
+      - path: ./dev.env
+        required: true
+    #environment:
+    #  POSTGRES_DB: ${DB_NAME}
+    #  POSTGRES_USER: ${DB_USER}
+    #  POSTGRES_PASSWORD: ${DB_PASS}
     volumes:
       - pg_data_booking:/var/lib/postgresql/data
     ports:
-      - "5432:${DB_PORT}"
+      - "5432:5432"
     restart: unless-stopped
 
   redis:
     image: redis:alpine
     container_name: redis
+    env_file:
+      - path: ./dev.env
+        required: true
     ports:
-      - "6379:${REDIS_PORT}"
+      - "6379:6379"
     restart: unless-stopped
 
 volumes:
