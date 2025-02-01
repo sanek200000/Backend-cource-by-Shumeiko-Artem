@@ -8,4 +8,4 @@ async def test_add_hotel():
 
     async with DBManager(session_factory=ASYNC_SESSION_MAKER) as db:
         new_hotel_data = await db.hotels.add(hotel_data)
-        print(f"{new_hotel_data}")
+        await db.commit()

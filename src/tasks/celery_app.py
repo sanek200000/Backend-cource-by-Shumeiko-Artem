@@ -1,11 +1,11 @@
 from celery import Celery
 
-from conf import settings
+from conf import SETTINGS
 
 
 celery_instance = Celery(
     "tasks",
-    broker=settings.REDIS_URL,
+    broker=SETTINGS.REDIS_URL,
     include=[
         "tasks.tasks",
     ],

@@ -5,19 +5,21 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from conf import settings
+from conf import SETTINGS
 from db import Base
-from models.bookings import BookingsOrm
-from models.facilities import FacilitiesOrm
-from models.hotels import HotelsOrm
-from models.rooms import RoomsOrm
-from models.users import UsersOrm
+from models import *
+
+# from models.bookings import BookingsOrm
+# from models.facilities import FacilitiesOrm
+# from models.hotels import HotelsOrm
+# from models.rooms import RoomsOrm
+# from models.users import UsersOrm
 
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option("sqlalchemy.url", f"{settings.DB_URL}?async_fallback=True")
+config.set_main_option("sqlalchemy.url", f"{SETTINGS.DB_URL}?async_fallback=True")
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

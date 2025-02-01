@@ -27,11 +27,11 @@ class Settings(BaseSettings):
     REDIS_PORT: int
 
 
-settings = Settings()
+SETTINGS = Settings()
 
 
 if __name__ == "__main__":
     print("Environments:")
-    [print(f"\t{k} = {v}") for k, v in settings]
-    print(f"\tDB_URL = {settings.DB_URL}")
-    print(f"\tDB_URL = {settings.REDIS_URL}")
+    [print(f"\t{k} = {v}") for k, v in SETTINGS]
+    print(f"\tDB_URL = {SETTINGS.DB_URL}")
+    print(f"\tDB_URL = {SETTINGS.REDIS_URL}")

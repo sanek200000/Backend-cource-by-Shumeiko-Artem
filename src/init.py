@@ -1,8 +1,8 @@
 from connectors.redis_connector import RedisManager
-from conf import settings
+from conf import SETTINGS
 
 
 redis_manager = RedisManager(
-    host=settings.REDIS_HOST,
-    port=settings.REDIS_PORT,
+    host=SETTINGS.REDIS_HOST,
+    port=SETTINGS.REDIS_PORT,
 )
