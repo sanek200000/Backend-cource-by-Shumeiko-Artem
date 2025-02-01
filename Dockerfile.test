@@ -1,6 +1,7 @@
 FROM python:3.11-slim
 
 COPY requirements.txt /temp/requirements.txt
+COPY requirements.test.txt /temp/requirements.test.txt
 COPY src /src
 COPY tests /src/tests
 WORKDIR /src
@@ -10,7 +11,7 @@ EXPOSE 8000
 RUN apt-get update && \
     apt-get install -y --no-install-recommends bash postgresql-client build-essential libpq-dev && \
     pip install -r /temp/requirements.txt && \
-    pip install pytest==8.3.2 && pip install pytest-asyncio==0.23.8\
+    pip install -r /temp/requirements.test.txt && \
     useradd -m service-user && \
     rm -rf /var/lib/apt/lists/* 
 
