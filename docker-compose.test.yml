@@ -24,8 +24,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./tests:/tests
-      - ./requirements.txt:/src/requirements.txt
+      - ./src:/src
+      - ./tests:/src/tests
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   postgres:
