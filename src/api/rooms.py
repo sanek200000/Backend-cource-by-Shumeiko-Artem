@@ -38,13 +38,16 @@ async def create_room(
 ):
     _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
     room = await db.rooms.add(_room_data)
+    f_ids = room_data.facilities_ids
 
-    rooms_facilities_data = [
-        RoomsFacilityAdd(room_id=room.id, facility_id=f_id)
-        for f_id in room_data.facilities_ids
-    ]
+    if f_ids != []:
+        rooms_facilities_data = [
+            RoomsFacilityAdd(room_id=room.id, facility_id=f_id)
+            for f_id in room_data.facilities_ids
+        ]
 
-    await db.rooms_facilities.add_bulk(rooms_facilities_data)
+        await db.rooms_facilities.add_bulk(rooms_facilities_data)
+
     await db.commit()
 
     return {"status": "OK", "data": room}
