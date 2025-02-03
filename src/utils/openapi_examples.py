@@ -179,8 +179,19 @@ class RoomsOE:
                 "title": "luxe",
                 "description": "sfsdfsdf sdfsdf sdfsdf sdfsdf",
                 "price": 1000,
-                "quantity": 1,
+                "quantity": 2,
                 "facilities_ids": [1, 3],
+            },
+        },
+        "4": {
+            "summary": "without_facilities",
+            "value": {
+                "hotel_id": 0,
+                "title": "bomj",
+                "description": "лучший номер на свете",
+                "price": 1,
+                "quantity": 1,
+                "facilities_ids": [],
             },
         },
     }

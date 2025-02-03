@@ -10,6 +10,14 @@ from models import *
 
 
 meta = Base.metadata
+BASE_URL = "http://test"
+USER_DATA = {"name": "user", "email": "sdfsf@fdsf.ru", "password": "111"}
+
+
+def load_mock_data(filename: str) -> list[dict]:
+    with open(filename, "r", encoding="utf-8") as file:
+        data = json.load(file)
+        return data
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -25,34 +33,20 @@ async def async_main() -> None:
 async def register_user(async_main):
     async with AsyncClient(
         transport=ASGITransport(app=app),
-        base_url="http://test",
+        base_url=BASE_URL,
     ) as client:
-        response = await client.post(
-            url="/auth/register",
-            json={
-                "name": "user",
-                "email": "sdfsf@fdsf.ru",
-                "password": "111",
-            },
-        )
+        response = await client.post(url="/auth/register", json=USER_DATA)
 
         assert response.status_code == 200
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def login_user(register_user):
+async def get_access_token(register_user):
     async with AsyncClient(
         transport=ASGITransport(app=app),
-        base_url="http://test",
+        base_url=BASE_URL,
     ) as client:
-        response = await client.post(
-            url="/auth/login",
-            json={
-                "name": "user",
-                "email": "sdfsf@fdsf.ru",
-                "password": "111",
-            },
-        )
+        response = await client.post(url="/auth/login", json=USER_DATA)
 
         assert response.status_code == 200
 
@@ -62,19 +56,15 @@ async def login_user(register_user):
         yield access_tocken
 
 
-def load_mock_data(filename: str):
-    with open(filename, "r", encoding="utf-8") as file:
-        data = json.load(file)
-        return data
-
-
 @pytest.fixture(scope="session", autouse=True)
-async def add_hotels(async_main):
+async def add_hotels(async_main) -> None:
+
     async with AsyncClient(
         transport=ASGITransport(app=app),
-        base_url="http://test",
+        base_url=BASE_URL,
     ) as client:
-        data: list[dict] = load_mock_data("/src/tests/mock_hotels.json")
+
+        data = load_mock_data("/src/tests/mock_hotels.json")
         for hotel in data:
             response = await client.post(url="/hotels/", json=hotel)
 
@@ -82,18 +72,19 @@ async def add_hotels(async_main):
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def add_rooms(login_user):
+async def add_rooms(get_access_token) -> None:
     async with AsyncClient(
         transport=ASGITransport(app=app),
-        base_url="http://test",
+        base_url=BASE_URL,
     ) as client:
-        data: list[dict] = load_mock_data("/src/tests/mock_rooms.json")
+
+        data = load_mock_data("/src/tests/mock_rooms.json")
         for room in data:
             hotel_id = room.get("hotel_id")
             response = await client.post(
                 url=f"/hotels/{hotel_id}/rooms/",
                 json=room,
-                headers={"access_tocken": login_user},
+                headers={"access_tocken": get_access_token},
             )
 
             assert response.status_code == 200
