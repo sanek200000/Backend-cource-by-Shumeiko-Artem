@@ -1,6 +1,4 @@
-from db import ASYNC_SESSION_MAKER_NULL_POOL
 from schemas.hotels import HotelAdd
-from utils.db_manager import DBManager
 
 
 async def test_add_hotel(db):

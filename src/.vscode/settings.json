@@ -4,6 +4,12 @@
 	"python.testing.pytestArgs": [
 		"."
 	],
+	"files.exclude": {
+    "**/__pycache__": true
+  },
+  "search.exclude": {
+    "**/__pycache__": true
+  },
 	"python.languageServer": "Pylance",
 	"python.testing.unittestEnabled": false,
 	"python.testing.pytestEnabled": true,
