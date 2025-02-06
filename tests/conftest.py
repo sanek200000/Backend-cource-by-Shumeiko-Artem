@@ -97,13 +97,11 @@ async def register_user(setup_database, ac):
     assert response.status_code == 200
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 async def login_user(register_user, ac):
     response = await ac.post(url="/auth/login", json=USER_DATA)
 
     assert response.status_code == 200
+    assert ac.cookies.get("access_tocken")
 
-    access_tocken = response.json().get("access_tocken")
-    assert access_tocken is not None
-
-    yield access_tocken
+    yield ac
