@@ -5,7 +5,11 @@ from sqlalchemy.orm import DeclarativeBase
 from conf import SETTINGS
 
 
-engine = create_async_engine(SETTINGS.DB_URL)
+db_params = {}
+# if SETTINGS.MODE == "TEST":
+#    db_params = {"poolclass": NullPool}
+
+engine = create_async_engine(SETTINGS.DB_URL, **db_params)
 engine_null_pool = create_async_engine(SETTINGS.DB_URL, poolclass=NullPool)
 
 ASYNC_SESSION_MAKER = async_sessionmaker(bind=engine, expire_on_commit=False)

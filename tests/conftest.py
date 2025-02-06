@@ -1,9 +1,10 @@
 import json
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Generator
 from httpx import ASGITransport, AsyncClient
 import pytest
 from sqlalchemy.ext.asyncio import create_async_engine
 
+from api.dependences import get_db
 from main import app
 from conf import SETTINGS
 from db import ASYNC_SESSION_MAKER_NULL_POOL, Base, engine_null_pool
@@ -22,10 +23,18 @@ async def async_main() -> None:
     assert SETTINGS.MODE == "TEST"
 
 
-@pytest.fixture(scope="function")
-async def db(async_main) -> AsyncGenerator[DBManager, None]:
+async def get_db_nullpool() -> AsyncGenerator[DBManager, None]:
     async with DBManager(session_factory=ASYNC_SESSION_MAKER_NULL_POOL) as db:
         yield db
+
+
+@pytest.fixture(scope="function")
+async def db(async_main) -> AsyncGenerator[DBManager, None]:
+    async for db in get_db_nullpool():
+        yield db
+
+
+app.dependency_overrides[get_db] = get_db_nullpool
 
 
 @pytest.fixture(scope="session")
