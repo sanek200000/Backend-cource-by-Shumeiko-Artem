@@ -98,7 +98,7 @@ async def register_user(setup_database, ac):
 
 
 @pytest.fixture(scope="session")
-async def login_user(register_user, ac):
+async def authenticated_ac(register_user, ac):
     response = await ac.post(url="/auth/login", json=USER_DATA)
 
     assert response.status_code == 200

@@ -8,6 +8,7 @@ from utils.openapi_examples import BookingOE
 router = APIRouter(prefix="/bookings", tags=["Бронирование номеров"])
 
 
+@router.get("", summary="Посмотреть все бронирования")
 @router.get("/", summary="Посмотреть все бронирования")
 async def get_all_bookings(db: DB_DEP):
     return await db.bookings.get_all()
@@ -18,6 +19,7 @@ async def get_all_bookings(db: DB_DEP, user_id: UserIdDep):
     return await db.bookings.get_filtred(user_id=user_id)
 
 
+@router.post("", summary="Добавить бронирование")
 @router.post("/", summary="Добавить бронирование")
 async def create_booking(
     db: DB_DEP,
