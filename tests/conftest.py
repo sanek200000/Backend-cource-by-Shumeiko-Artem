@@ -88,3 +88,22 @@ async def register_user(setup_database, ac):
     response = await ac.post(url="/auth/register", json=USER_DATA)
 
     assert response.status_code == 200
+
+
+@pytest.fixture(scope="session", autouse=True)
+async def register_user(setup_database, ac):
+    response = await ac.post(url="/auth/register", json=USER_DATA)
+
+    assert response.status_code == 200
+
+
+@pytest.fixture(scope="session", autouse=True)
+async def login_user(register_user, ac):
+    response = await ac.post(url="/auth/login", json=USER_DATA)
+
+    assert response.status_code == 200
+
+    access_tocken = response.json().get("access_tocken")
+    assert access_tocken is not None
+
+    yield access_tocken
