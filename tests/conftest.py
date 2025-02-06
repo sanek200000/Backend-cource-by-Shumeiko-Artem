@@ -1,5 +1,9 @@
 import json
 import os
+from unittest import mock
+
+mock.patch("fastapi_cache.decorator.cache", lambda *args, **kwargs: lambda f: f).start()
+
 from typing import AsyncGenerator, Generator
 from httpx import ASGITransport, AsyncClient
 import pytest
