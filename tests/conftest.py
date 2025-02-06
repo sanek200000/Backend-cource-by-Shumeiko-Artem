@@ -1,4 +1,5 @@
 import json
+import os
 from typing import AsyncGenerator, Generator
 from httpx import ASGITransport, AsyncClient
 import pytest
@@ -9,6 +10,7 @@ from main import app
 from conf import SETTINGS
 from db import ASYNC_SESSION_MAKER_NULL_POOL, Base, engine_null_pool
 from models import *
+from schemas.facilities import FacilitiesAdd
 from schemas.hotels import HotelAdd
 from schemas.rooms import RoomAdd
 from utils.db_manager import DBManager
@@ -47,7 +49,10 @@ async def ac(async_main) -> AsyncGenerator[AsyncClient, None]:
 
 
 def load_mock_data(filename: str) -> list[dict]:
-    with open(filename, "r", encoding="utf-8") as file:
+    current_dir = os.path.dirname(__file__)
+    file_path = os.path.join(current_dir, filename)
+
+    with open(file_path, "r", encoding="utf-8") as file:
         return json.load(file)
 
 
@@ -57,15 +62,20 @@ async def setup_database(async_main) -> None:
         await conn.run_sync(meta.drop_all)
         await conn.run_sync(meta.create_all)
 
-    hotels_data = load_mock_data("/src/tests/mock_hotels.json")
-    rooms_data = load_mock_data("/src/tests/mock_rooms.json")
+    hotels_data = load_mock_data("mock_hotels.json")
+    rooms_data = load_mock_data("mock_rooms.json")
+    facilities_data = load_mock_data("mock_facilitieas.json")
 
     hotels = [HotelAdd.model_validate(hotel) for hotel in hotels_data]
     rooms = [RoomAdd.model_validate(room) for room in rooms_data]
+    facilities = [
+        FacilitiesAdd.model_validate(facility) for facility in facilities_data
+    ]
 
     async with DBManager(ASYNC_SESSION_MAKER_NULL_POOL) as db_:
         await db_.hotels.add_bulk(hotels)
         await db_.rooms.add_bulk(rooms)
+        await db_.facilities.add_bulk(facilities)
         await db_.commit()
 
 
