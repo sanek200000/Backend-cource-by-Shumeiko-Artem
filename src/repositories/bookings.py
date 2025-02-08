@@ -1,11 +1,12 @@
 from datetime import date
-from pydantic import BaseModel
-from sqlalchemy import insert, select
+from fastapi import HTTPException
+from sqlalchemy import select
 from models.bookings import BookingsOrm
 from models.rooms import RoomsOrm
 from repositories.base import BaseRepository
 from repositories.mappers.mappers import BookingDataMapper
 from repositories.utils import rooms_ids_for_booking
+from schemas.bookings import BookingAdd
 
 
 class BookingsRepository(BaseRepository):
@@ -20,22 +21,18 @@ class BookingsRepository(BaseRepository):
             self.mapper.map_to_domain_entity(booking) for booking in res.scalars().all()
         ]
 
-    async def add_bookings(self, data: BaseModel):
-        data_dict: dict = data.model_dump()
+    async def add_bookings(self, data: BookingAdd, hotel_id: int):
 
         rooms_ids_to_get = rooms_ids_for_booking(
-            date_from=data_dict.get("date_from"),
-            date_to=data_dict.get("date_to"),
-        )
-
-        rooms_ids_to_get = select(RoomsOrm.id).filter(
-            RoomsOrm.id.in_(rooms_ids_to_get),
-            RoomsOrm.id == data_dict.get("room_id"),
+            date_from=data.date_from,
+            date_to=data.date_to,
+            hotel_id=hotel_id,
         )
 
         result = await self.session.execute(rooms_ids_to_get)
-        free_room = result.scalars().all()
+        free_rooms = result.scalars().all()
 
-        print(f"=================== {free_room = } =======================")
-        if free_room:
+        if data.room_id in free_rooms:
             return await self.add(data)
+        else:
+            raise HTTPException(500)

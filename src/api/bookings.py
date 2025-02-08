@@ -26,6 +26,7 @@ async def create_booking(
 ):
     try:
         room = await db.rooms.get_one_or_none(id=booking_data.room_id)
+        hotel = await db.hotels.get_one_or_none(id=room.hotel_id)
         room_price: int = room.price
     except AttributeError:
         raise HTTPException(status_code=404, detail="Такого номера не существует")
@@ -36,7 +37,10 @@ async def create_booking(
         **booking_data.model_dump(),
     )
 
-    booking = await db.bookings.add_bookings(_booking_data)
+    booking = await db.bookings.add_bookings(
+        _booking_data,
+        hotel_id=hotel.id,
+    )
     await db.commit()
 
     return {"status": "OK", "data": booking}
