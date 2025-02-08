@@ -65,6 +65,8 @@ def rooms_ids_for_booking(
 
     query = query.limit(limit).offset(offset)
 
+    print("\n====================================================")
     print(query.compile(compile_kwargs={"literal_binds": True}))
+    print("=====================================================\n")
 
     return query
