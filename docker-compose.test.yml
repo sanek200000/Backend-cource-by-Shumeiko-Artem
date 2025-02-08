@@ -7,17 +7,6 @@ services:
     env_file:
       - path: ./test.env
         required: true
-    #environment:
-    #  - DB_HOST=${DB_HOST}
-    #  - DB_NAME=${DB_NAME}
-    #  - DB_USER=${DB_USER}
-    #  - DB_PASS=${DB_PASS}
-    #  - DB_PORT=${DB_PORT}
-    #  - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-    #  - JWT_ALGORITHM=${JWT_ALGORITHM}
-    #  - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
-    #  - REDIS_HOST=${REDIS_HOST}
-    #  - REDIS_PORT=${REDIS_PORT}
     depends_on:
       - postgres
       - redis

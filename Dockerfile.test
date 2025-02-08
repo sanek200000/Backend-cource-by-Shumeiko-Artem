@@ -3,7 +3,6 @@ FROM python:3.11-slim
 COPY requirements.txt /temp/requirements.txt
 COPY requirements.test.txt /temp/requirements.test.txt
 COPY src /src
-COPY tests /src/tests
 WORKDIR /src
 
 EXPOSE 8000
