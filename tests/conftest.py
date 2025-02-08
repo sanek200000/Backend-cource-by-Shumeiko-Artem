@@ -118,13 +118,12 @@ async def authenticated_ac(register_user, ac):
 
 
 @pytest.fixture(scope="module")
-async def delete_all_bookings(ac):
-    response = await ac.get(url="/bookings")
+async def delete_all_bookings():
 
     async with DBManager(ASYNC_SESSION_MAKER_NULL_POOL) as db_:
-        [await db_.bookings.delete(id=booking.get("id")) for booking in response.json()]
+        await db_.bookings.delete()
         await db_.commit()
 
-    response = await ac.get(url="/bookings")
+        response = await db_.bookings.get_all()
 
-    assert response.json() == []
+    assert response == []
