@@ -18,7 +18,6 @@ async def test_add_booking(
     date_from,
     date_to,
     status_code,
-    db,
     authenticated_ac,
 ):
 
@@ -39,3 +38,39 @@ async def test_add_booking(
         assert isinstance(res, dict)
         assert res.get("status") == "OK"
         assert "data" in res
+
+
+@pytest.mark.parametrize(
+    "room_id, date_from, date_to, status_code, count",
+    [
+        (1, "2024-08-01", "2024-08-10", 200, 1),
+        (1, "2024-08-01", "2024-08-10", 200, 2),
+        (1, "2024-08-01", "2024-08-10", 200, 3),
+        (1, "2024-08-01", "2024-08-10", 200, 4),
+        (1, "2024-08-01", "2024-08-10", 200, 5),
+    ],
+)
+async def test_add_and_get_my_bookings(
+    room_id,
+    date_from,
+    date_to,
+    status_code,
+    count,
+    delete_all_bookings,
+    authenticated_ac,
+):
+
+    response = await authenticated_ac.post(
+        "/bookings",
+        json={
+            "room_id": room_id,
+            "date_from": date_from,
+            "date_to": date_to,
+        },
+    )
+
+    assert response.status_code == status_code
+    if status_code == 200:
+        response = await authenticated_ac.get("/bookings/me")
+        res: list = response.json()
+        assert len(res) == count

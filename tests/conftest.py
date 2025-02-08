@@ -52,6 +52,16 @@ async def ac(async_main) -> AsyncGenerator[AsyncClient, None]:
         yield ac
 
 
+@pytest.fixture(scope="function")
+async def ac_commit(async_main) -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test",
+    ) as ac:
+        yield ac
+        await ac.commit()
+
+
 def load_mock_data(filename: str) -> list[dict]:
     current_dir = os.path.dirname(__file__)
     file_path = os.path.join(current_dir, filename)
@@ -105,3 +115,16 @@ async def authenticated_ac(register_user, ac):
     assert ac.cookies.get("access_tocken")
 
     yield ac
+
+
+@pytest.fixture(scope="module")
+async def delete_all_bookings(ac):
+    response = await ac.get(url="/bookings")
+
+    async with DBManager(ASYNC_SESSION_MAKER_NULL_POOL) as db_:
+        [await db_.bookings.delete(id=booking.get("id")) for booking in response.json()]
+        await db_.commit()
+
+    response = await ac.get(url="/bookings")
+
+    assert response.json() == []
