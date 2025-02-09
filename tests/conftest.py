@@ -4,10 +4,9 @@ from unittest import mock
 
 mock.patch("fastapi_cache.decorator.cache", lambda *args, **kwargs: lambda f: f).start()
 
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
 from httpx import ASGITransport, AsyncClient
 import pytest
-from sqlalchemy.ext.asyncio import create_async_engine
 
 from api.dependences import get_db
 from main import app
@@ -50,16 +49,6 @@ async def ac(async_main) -> AsyncGenerator[AsyncClient, None]:
         base_url="http://test",
     ) as ac:
         yield ac
-
-
-@pytest.fixture(scope="function")
-async def ac_commit(async_main) -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(
-        transport=ASGITransport(app=app),
-        base_url="http://test",
-    ) as ac:
-        yield ac
-        await ac.commit()
 
 
 def load_mock_data(filename: str) -> list[dict]:
@@ -109,21 +98,10 @@ async def register_user(setup_database, ac):
 
 @pytest.fixture(scope="session")
 async def authenticated_ac(register_user, ac):
+
     response = await ac.post(url="/auth/login", json=USER_DATA)
 
     assert response.status_code == 200
     assert ac.cookies.get("access_tocken")
 
     yield ac
-
-
-@pytest.fixture(scope="module")
-async def delete_all_bookings():
-
-    async with DBManager(ASYNC_SESSION_MAKER_NULL_POOL) as db_:
-        await db_.bookings.delete()
-        await db_.commit()
-
-        response = await db_.bookings.get_all()
-
-    assert response == []

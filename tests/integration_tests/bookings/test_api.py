@@ -1,5 +1,20 @@
 import pytest
 
+from db import ASYNC_SESSION_MAKER_NULL_POOL
+from utils.db_manager import DBManager
+
+
+@pytest.fixture(scope="module")
+async def delete_all_bookings():
+
+    async with DBManager(ASYNC_SESSION_MAKER_NULL_POOL) as db_:
+        await db_.bookings.delete()
+        await db_.commit()
+
+        response = await db_.bookings.get_all()
+
+    assert response == []
+
 
 @pytest.mark.parametrize(
     "room_id, date_from, date_to, status_code",
