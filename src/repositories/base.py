@@ -5,6 +5,7 @@ import sqlalchemy.exc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db import Base
+from exceptions import ObjictNotFoundException
 from repositories.mappers.base import DataMapper
 
 
@@ -34,6 +35,17 @@ class BaseRepository:
         row = result.scalars().one_or_none()
         if row:
             return self.mapper.map_to_domain_entity(row)
+
+    async def get_one(self, **kwargs):
+        "sqlalchemy.exc.NoResultFound"
+        "sqlalchemy.exc.DBAPIError"
+        query = select(self.model).filter_by(**kwargs)
+        result = await self.session.execute(query)
+        try:
+            row = result.scalars().one()
+        except sqlalchemy.exc.NoResultFound:
+            raise ObjictNotFoundException
+        return self.mapper.map_to_domain_entity(row)
 
     async def add(self, data: BaseModel):
         try:
