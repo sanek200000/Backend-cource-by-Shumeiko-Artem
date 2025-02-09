@@ -1,7 +1,7 @@
 from models.facilities import FacilitiesOrm, RoomsFacilitiesOrm
 from repositories.base import BaseRepository
 from repositories.mappers.mappers import FacilityDataMapper
-from schemas.facilities import Facility, RoomsFacilityAdd
+from schemas.facilities import RoomsFacilityAdd
 
 
 class FacilitiesRepository(BaseRepository):

@@ -11,3 +11,4 @@ redis==5.0.8
 fastapi-cache2==0.2.2
 celery==5.4.0
 pillow==10.4.0
+ruff

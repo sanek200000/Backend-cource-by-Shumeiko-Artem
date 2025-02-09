@@ -74,7 +74,7 @@ async def modify_room(
 
 
 @router.patch("/{room_id}", summary="Частичное обновление информации о номерах")
-async def modify_room(
+async def edit_room(
     db: DB_DEP,
     hotel_id: int,
     room_id: int,

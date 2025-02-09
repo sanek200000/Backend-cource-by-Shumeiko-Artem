@@ -10,7 +10,6 @@ from api.rooms import router as router_rooms
 from api.bookings import router as router_bookings
 from api.facilities import router as router_facilities
 from api.images import router as router_images
-from utils.openapi_examples import AuthOE
 
 from init import redis_manager
 

@@ -7,7 +7,7 @@ from alembic import context
 
 from conf import SETTINGS
 from db import Base
-from models import *
+from models import *  # noqa: F403
 
 # from models.bookings import BookingsOrm
 # from models.facilities import FacilitiesOrm

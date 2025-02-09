@@ -67,7 +67,7 @@ async def modify_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelAdd):
     summary="Частичное обновление информации об отеле",
     description="Частичное обновление информации об отеле",
 )
-async def modify_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelPatch):
+async def edit_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelPatch):
     await db.hotels.edit(hotel_data, exclude_unset=True, id=hotel_id)
     await db.commit()
 

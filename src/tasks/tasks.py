@@ -3,7 +3,6 @@ import os
 from time import sleep
 from PIL import Image
 
-from api import bookings
 from db import ASYNC_SESSION_MAKER_NULL_POOL
 from tasks.celery_app import celery_instance
 from utils.db_manager import DBManager
