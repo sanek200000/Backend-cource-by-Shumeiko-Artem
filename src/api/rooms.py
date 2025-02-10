@@ -1,8 +1,9 @@
 from datetime import date
-from fastapi import APIRouter, Body, Query
+from fastapi import APIRouter, Body, HTTPException, Query
 
 from api.dependences import DB_DEP
 
+from exceptions import DateToEaelierDateFromException, ObjictNotFoundException
 from schemas.facilities import RoomsFacilityAdd
 from schemas.rooms import RoomAdd, RoomAddRequest, RoomPatch, RoomPatchRequest
 from utils.openapi_examples import RoomsOE
@@ -18,16 +19,26 @@ async def get_rooms_in_hotel(
     date_from: date = Query(example="2024-11-01"),
     date_to: date = Query(example="2024-11-08"),
 ):
-    return await db.rooms.get_filtred_by_time(
-        hotel_id=hotel_id,
-        date_from=date_from,
-        date_to=date_to,
-    )
+
+    try:
+        result = await db.rooms.get_filtred_by_time(
+            hotel_id=hotel_id,
+            date_from=date_from,
+            date_to=date_to,
+        )
+    except DateToEaelierDateFromException as ex:
+        raise HTTPException(404, detail=ex.detail)
+
+    return result
 
 
 @router.get("/{room_id}")
 async def get_room(hotel_id: int, room_id: int, db: DB_DEP):
-    return await db.rooms.get_one_or_none(id=room_id, hotel_id=hotel_id)
+    try:
+        result = await db.rooms.get_one_or_none(id=room_id, hotel_id=hotel_id)
+    except ObjictNotFoundException as ex:
+        raise HTTPException(404, detail="Такого номера не существует")
+    return result
 
 
 @router.post("/", summary="Добавить номер в список")
@@ -36,8 +47,12 @@ async def create_room(
     hotel_id: int,
     room_data: RoomAddRequest = Body(openapi_examples=RoomsOE.create),
 ):
-    _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
-    room = await db.rooms.add(_room_data)
+    try:
+        _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
+        room = await db.rooms.add(_room_data)
+    except ObjictNotFoundException:
+        raise HTTPException(404, "Отель не найден")
+
     f_ids = room_data.facilities_ids
 
     if f_ids != []:
@@ -60,10 +75,11 @@ async def modify_room(
     room_id: int,
     room_data: RoomAddRequest,
 ):
+
     _room_data = RoomAdd(hotel_id=hotel_id, **room_data.model_dump())
     await db.rooms.edit(_room_data, id=room_id)
+
     await db.rooms_facilities.edit(
-        db=db,
         room_id=room_id,
         facilities_ids=room_data.facilities_ids,
     )

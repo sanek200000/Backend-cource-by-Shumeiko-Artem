@@ -1,22 +1,22 @@
 from datetime import date
-from fastapi import Body, Query, APIRouter
+from fastapi import Body, HTTPException, Query, APIRouter
 from fastapi_cache.decorator import cache
 
 from api.dependences import DB_DEP, PaginationDep
+from exceptions import DateToEaelierDateFromException
 from schemas.hotels import HotelAdd, HotelPatch
 from utils.openapi_examples import HotelsOE
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
 
 
-@router.get("/", summary="Получение список отелей")
 @router.get("", summary="Получение список отелей")
 @cache(expire=10)
 async def get_hotel_by_id(db: DB_DEP):
     return await db.hotels.get_all()
 
 
-@router.get("/{hotel_id}", summary="Получить информацию об отеле")
+@router.get("/filter", summary="Список отелей по фильтру")
 @cache(expire=10)
 async def get_hotel(
     pgntn: PaginationDep,
@@ -28,17 +28,22 @@ async def get_hotel(
 ):
     per_page = pgntn.per_page or 5
 
-    return await db.hotels.get_filtred_by_time(
-        date_from=date_from,
-        date_to=date_to,
-        title=title,
-        location=location,
-        limit=per_page,
-        offset=per_page * (pgntn.page - 1),
-    )
+    try:
+        result = await db.hotels.get_filtred_by_time(
+            date_from=date_from,
+            date_to=date_to,
+            title=title,
+            location=location,
+            limit=per_page,
+            offset=per_page * (pgntn.page - 1),
+        )
+    except DateToEaelierDateFromException as ex:
+        raise HTTPException(404, detail=ex.detail)
+
+    return result
 
 
-@router.post("/", summary="Добавить отель в список")
+@router.post("", summary="Добавить отель в список")
 async def create_hotel(
     db: DB_DEP,
     hotel_data: HotelAdd = Body(openapi_examples=HotelsOE.create),

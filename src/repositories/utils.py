@@ -1,6 +1,7 @@
 from datetime import date
 
 from sqlalchemy import func, select
+from exceptions import DateToEaelierDateFromException
 from models.bookings import BookingsOrm
 from models.rooms import RoomsOrm
 
@@ -26,6 +27,10 @@ def rooms_ids_for_booking(
     select * from rooms_left_table
     where rooms_left > 0;
     """
+
+    if date_from > date_to:
+        raise DateToEaelierDateFromException
+
     rooms_count = (
         select(BookingsOrm.room_id, func.count("*").label("rooms_booked"))
         .select_from(BookingsOrm)

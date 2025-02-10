@@ -26,6 +26,7 @@ class HotelsRepository(BaseRepository):
             limit=limit,
             offset=offset,
         )
+
         hotels_ids_to_get = (
             select(RoomsOrm.hotel_id)
             .select_from(RoomsOrm)

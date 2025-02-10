@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from typing import Any
 from pydantic import BaseModel
 from sqlalchemy import delete, insert, select, update
 import sqlalchemy.exc
@@ -16,14 +16,14 @@ class BaseRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def get_filtred(self, *args, **kwargs):
+    async def get_filtred(self, *args, **kwargs) -> list[BaseModel | Any]:
         query = select(self.model).filter(*args).filter_by(**kwargs)
         print(query.compile(compile_kwargs={"literal_binds": True}))
         result = await self.session.execute(query)
 
-        return [
-            self.mapper.map_to_domain_entity(data=row) for row in result.scalars().all()
-        ]
+        rows = result.scalars().all()
+        print(f"================  {rows = }")
+        return [self.mapper.map_to_domain_entity(row) for row in rows]
 
     async def get_all(self):
         return await self.get_filtred()
@@ -48,33 +48,30 @@ class BaseRepository:
         return self.mapper.map_to_domain_entity(row)
 
     async def add(self, data: BaseModel):
-        try:
-            query = insert(self.model).values(**data.model_dump()).returning(self.model)
-            print(query.compile(compile_kwargs={"literal_binds": True}))
-            result = await self.session.execute(query)
+        query = insert(self.model).values(**data.model_dump()).returning(self.model)
+        print(query.compile(compile_kwargs={"literal_binds": True}))
 
-            row = result.scalars().one()
-            return self.mapper.map_to_domain_entity(row)
+        try:
+            result = await self.session.execute(query)
         except sqlalchemy.exc.IntegrityError:
-            raise HTTPException(
-                status_code=401,
-                detail="Недопустимая дупликация данных",
-            )
+            raise ObjictNotFoundException
+
+        row = result.scalars().one()
+        return self.mapper.map_to_domain_entity(row)
 
     async def add_bulk(self, data: list[BaseModel]):
         query = insert(self.model).values([item.model_dump() for item in data])
         await self.session.execute(query)
 
     async def edit(self, data: BaseModel, exclude_unset: bool = False, **kwargs):
-        try:
-            query = (
-                update(self.model)
-                .filter_by(**kwargs)
-                .values(**data.model_dump(exclude_unset=exclude_unset))
-            )
-            await self.session.execute(query)
-        except sqlalchemy.exc.IntegrityError:
-            raise HTTPException(status_code=401, detail="Некорректные данные")
+        query = (
+            update(self.model)
+            .filter_by(**kwargs)
+            .values(**data.model_dump(exclude_unset=exclude_unset))
+        )
+
+        res = await self.session.execute(query)
+        print(f"================ {res = }")
 
     async def edit_bulk(self, data: BaseModel, exclude_unset: bool = False, **kwargs):
         query = (

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Body, HTTPException, Response
 
+from exceptions import ObjictNotFoundException, UserAlradyExistException
 from schemas.users import UserAdd, UserRequestAdd
 from services.auth import AuthService
 from api.dependences import DB_DEP, UserIdDep
@@ -26,9 +27,15 @@ async def register_user(
         hashed_password=hashed_password,
     )
 
-    await db.users.add(new_user_data)
-    await db.commit()
+    try:
+        await db.users.add(new_user_data)
+    except ObjictNotFoundException:
+        raise HTTPException(
+            401,
+            detail="Пользователь с таким именеи или почтой уже зарегестрирован.",
+        )
 
+    await db.commit()
     return {"status": "OK"}
 
 

@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
+from exceptions import ObjictNotFoundException
 from models.rooms import RoomsOrm
 from repositories.base import BaseRepository
 from repositories.mappers.mappers import RoomDataMapper, RoomDataWithRelsMapper
@@ -41,3 +42,4 @@ class RoomsRepository(BaseRepository):
         row = result.scalars().one_or_none()
         if row:
             return RoomDataWithRelsMapper.map_to_domain_entity(row)
+        raise ObjictNotFoundException
