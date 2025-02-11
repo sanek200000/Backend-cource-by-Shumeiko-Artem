@@ -38,7 +38,7 @@ async def get_hotel(
             offset=per_page * (pgntn.page - 1),
         )
     except DateToEaelierDateFromException as ex:
-        raise HTTPException(404, detail=ex.detail)
+        raise HTTPException(422, detail=ex.detail)
 
     return result
 

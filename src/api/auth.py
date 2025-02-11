@@ -29,9 +29,9 @@ async def register_user(
 
     try:
         await db.users.add(new_user_data)
-    except ObjictNotFoundException:
+    except UserAlradyExistException:
         raise HTTPException(
-            401,
+            409,
             detail="Пользователь с таким именеи или почтой уже зарегестрирован.",
         )
 

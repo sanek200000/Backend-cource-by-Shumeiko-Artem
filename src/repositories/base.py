@@ -1,11 +1,13 @@
+import logging
 from typing import Any
+from asyncpg import UniqueViolationError
 from pydantic import BaseModel
 from sqlalchemy import delete, insert, select, update
 import sqlalchemy.exc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db import Base
-from exceptions import ObjictNotFoundException
+from exceptions import ObjictNotFoundException, UserAlradyExistException
 from repositories.mappers.base import DataMapper
 
 
@@ -53,8 +55,17 @@ class BaseRepository:
 
         try:
             result = await self.session.execute(query)
-        except sqlalchemy.exc.IntegrityError:
-            raise ObjictNotFoundException
+        except sqlalchemy.exc.IntegrityError as ex:
+            logging.error(
+                f"Не удалось добавить данные в БД, входные данные={data}, тип ошибки: {type(ex.orig.__cause__)}"
+            )
+            if isinstance(ex.orig.__cause__, UniqueViolationError):
+                raise UserAlradyExistException from ex
+            else:
+                logging.error(
+                    f"Незнакомая ошибка, входные данные={data}, тип ошибки: {type(ex.orig.__cause__)}"
+                )
+                raise ex
 
         row = result.scalars().one()
         return self.mapper.map_to_domain_entity(row)

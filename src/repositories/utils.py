@@ -28,7 +28,7 @@ def rooms_ids_for_booking(
     where rooms_left > 0;
     """
 
-    if date_from > date_to:
+    if date_from >= date_to:
         raise DateToEaelierDateFromException
 
     rooms_count = (
