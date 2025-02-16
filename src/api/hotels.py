@@ -5,6 +5,7 @@ from fastapi_cache.decorator import cache
 from api.dependences import DB_DEP, PaginationDep
 from exceptions import DateToEaelierDateFromException
 from schemas.hotels import HotelAdd, HotelPatch
+from services.hotels import HotelService
 from utils.openapi_examples import HotelsOE
 
 router = APIRouter(prefix="/hotels", tags=["Hotels"])
@@ -13,34 +14,30 @@ router = APIRouter(prefix="/hotels", tags=["Hotels"])
 @router.get("", summary="Получение список отелей")
 @cache(expire=10)
 async def get_hotel_by_id(db: DB_DEP):
-    return await db.hotels.get_all()
+    return await HotelService(db).get_all_hotels()
 
 
 @router.get("/filter", summary="Список отелей по фильтру")
 @cache(expire=10)
 async def get_hotel(
-    pgntn: PaginationDep,
+    pagination: PaginationDep,
     db: DB_DEP,
     title: str | None = Query(None, description="Название отеля"),
     location: str | None = Query(None, description="Адрес отеля"),
     date_from: date = Query(example="2024-11-01"),
     date_to: date = Query(example="2024-11-08"),
 ):
-    per_page = pgntn.per_page or 5
 
     try:
-        result = await db.hotels.get_filtred_by_time(
-            date_from=date_from,
-            date_to=date_to,
-            title=title,
-            location=location,
-            limit=per_page,
-            offset=per_page * (pgntn.page - 1),
+        return await HotelService(db).get_filtred_by_time(
+            pagination,
+            title,
+            location,
+            date_from,
+            date_to,
         )
     except DateToEaelierDateFromException as ex:
         raise HTTPException(422, detail=ex.detail)
-
-    return result
 
 
 @router.post("", summary="Добавить отель в список")
@@ -49,9 +46,7 @@ async def create_hotel(
     hotel_data: HotelAdd = Body(openapi_examples=HotelsOE.create),
 ):
 
-    hotel = await db.hotels.add(hotel_data)
-    await db.commit()
-
+    hotel = await HotelService(db).create_hotel(hotel_data)
     return {"status": "OK", "data": hotel}
 
 
@@ -61,9 +56,7 @@ async def create_hotel(
     description="Обновление информации об отеле",
 )
 async def modify_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelAdd):
-    await db.hotels.edit(hotel_data, id=hotel_id)
-    await db.commit()
-
+    await HotelService(db).put_hotel(hotel_id, hotel_data)
     return {"status": "OK"}
 
 
@@ -73,9 +66,7 @@ async def modify_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelAdd):
     description="Частичное обновление информации об отеле",
 )
 async def edit_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelPatch):
-    await db.hotels.edit(hotel_data, exclude_unset=True, id=hotel_id)
-    await db.commit()
-
+    await HotelService(db).patch_hotel(hotel_id, hotel_data)
     return {"status": "OK"}
 
 
@@ -85,7 +76,5 @@ async def edit_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelPatch):
     description="Удаление информации об отеле из БД",
 )
 async def delete_hotel(db: DB_DEP, hotel_id: int):
-    await db.hotels.delete(id=hotel_id)
-    await db.commit()
-
+    await HotelService(db).delete_hotel(hotel_id)
     return {"status": "OK"}
