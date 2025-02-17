@@ -1,9 +1,9 @@
 services:
-  web-app:
+  web-app-test:
     build:
       context: .
       dockerfile: Dockerfile.test
-    container_name: web-app
+    container_name: web-app-test
     env_file:
       - path: ./test.env
         required: true
@@ -11,10 +11,11 @@ services:
       - postgres
       - redis
     ports:
-      - "8000:8000"
+      - "8002:8002"
     volumes:
       - ./src:/src
       - ./tests:/src/tests
+      - ./pytest.ini:/src/pytest.ini
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   postgres:

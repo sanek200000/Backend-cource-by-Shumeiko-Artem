@@ -25,6 +25,8 @@ services:
     volumes:
       - ./src:/src
       - ./requirements.txt:/src/requirements.txt
+      #- ./tests:/src/tests
+      #- ./pytest.ini:/src/pytest.ini
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   postgres:
