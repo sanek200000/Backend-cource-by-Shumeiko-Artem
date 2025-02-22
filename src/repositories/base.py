@@ -49,6 +49,15 @@ class BaseRepository:
             raise ObjictNotFoundException
         return self.mapper.map_to_domain_entity(row)
 
+    async def get_one_or_none(self, **filter_by) -> BaseModel | None | Any:
+        query = select(self.model).filter_by(**filter_by)
+        result = await self.session.execute(query)
+        model = result.scalars().one_or_none()
+
+        if model is None:
+            return None
+        return self.mapper.map_to_domain_entity(model)
+
     async def add(self, data: BaseModel):
         query = insert(self.model).values(**data.model_dump()).returning(self.model)
         print(query.compile(compile_kwargs={"literal_binds": True}))
