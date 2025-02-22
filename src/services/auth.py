@@ -4,10 +4,10 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 
 from conf import SETTINGS
-from services.base import BaseServise
+from services.base import BaseService
 
 
-class AuthService(BaseServise):
+class AuthService(BaseService):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     def create_access_token(self, data: dict):

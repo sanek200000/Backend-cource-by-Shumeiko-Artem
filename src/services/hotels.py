@@ -2,12 +2,16 @@ from datetime import date
 
 from fastapi import HTTPException
 from api.dependences import PaginationDep
-from exceptions import DateToEaelierDateFromException
+from exceptions import (
+    DateToEaelierDateFromException,
+    HotelNotFoundException,
+    ObjictNotFoundException,
+)
 from schemas.hotels import HotelAdd, HotelPatch
-from services.base import BaseServise
+from services.base import BaseService
 
 
-class HotelService(BaseServise):
+class HotelService(BaseService):
 
     async def get_filtred_by_time(
         self,
@@ -48,3 +52,9 @@ class HotelService(BaseServise):
     async def delete_hotel(self, id: int):
         await self.db.hotels.delete(id=id)
         await self.db.commit()
+
+    async def get_hotel_with_check(self, id: int):
+        try:
+            await self.db.hotels.get_one(id=id)
+        except ObjictNotFoundException:
+            raise HotelNotFoundException

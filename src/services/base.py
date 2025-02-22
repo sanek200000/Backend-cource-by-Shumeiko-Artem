@@ -1,7 +1,7 @@
 from utils.db_manager import DBManager
 
 
-class BaseServise:
+class BaseService:
     db: DBManager | None
 
     def __init__(self, db: DBManager | None = None):
