@@ -27,7 +27,7 @@ async def get_rooms_in_hotel(
     return await RoomService(db).get_rooms_in_hotel(hotel_id, date_from, date_to)
 
 
-@router.get("/{room_id}")
+@router.get("/{room_id}", summary="Посмотреть номер в отеле")
 async def get_room(hotel_id: int, room_id: int, db: DB_DEP):
     try:
         return await RoomService(db).get_room(hotel_id=hotel_id, room_id=room_id)

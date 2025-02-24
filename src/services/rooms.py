@@ -11,11 +11,21 @@ from services.hotels import HotelService
 
 
 class RoomService(BaseService):
-    async def get_room_in_hotel_with_check(self, hotel_id: int, room_id: int):
-        await HotelService(self.db).get_hotel_with_check(hotel_id)
+    async def get_room_in_hotel_with_check(self, hotel_id: int | None, room_id: int):
+        """Checking the availability of a hotel room by its id
+
+        Args:
+            hotel_id (int|None): hotel id
+            room_id (int): room id
+
+        Raises:
+            RoomNotFoundException: room not found in this hotel
+        """
+        if hotel_id:
+            await HotelService(self.db).get_hotel_with_check(hotel_id)
 
         try:
-            await self.db.rooms.get_one(id=room_id, hotel_id=hotel_id)
+            return await self.db.rooms.get_one(id=room_id)
         except ObjictNotFoundException:
             raise RoomNotFoundException
 

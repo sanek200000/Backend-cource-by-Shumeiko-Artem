@@ -24,8 +24,13 @@ class ObjictNotFoundException(BaseException):
 class RoomNotFoundException(ObjictNotFoundException):
     detail = "Номер не найден."
 
+
 class HotelNotFoundException(ObjictNotFoundException):
     detail = "Отель не найден."
+
+
+class BookingNotFoundException(ObjictNotFoundException):
+    detail = "Бронирование не найдено."
 
 
 class AllRoomsAreBookedException(BaseException):
@@ -48,6 +53,11 @@ class RoomNotFoundHTTPException(BaseHTTPException):
 class HotelNotFoundHTTPException(BaseHTTPException):
     status_code = 404
     detail = "Отель не найден."
+
+
+class BookingNotFoundHTTPException(BaseHTTPException):
+    status_code = 404
+    detail = "Бронирование не найдено."
 
 
 def check_date_to_after_date_from(date_from: date, date_to: date) -> None:

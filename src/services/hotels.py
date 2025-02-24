@@ -54,6 +54,14 @@ class HotelService(BaseService):
         await self.db.commit()
 
     async def get_hotel_with_check(self, id: int):
+        """Checking the existence of a hotel by its `id`
+
+        Args:
+            id (int): hotel id
+
+        Raises:
+            HotelNotFoundException: Hotel with this `id` not found
+        """
         try:
             await self.db.hotels.get_one(id=id)
         except ObjictNotFoundException:

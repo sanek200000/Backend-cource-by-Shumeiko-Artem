@@ -12,6 +12,7 @@
 				"ms-python.python",
 				"ms-python.debugpy",
 				"cweijan.vscode-database-client2",
+				"njpwerner.autodocstring",
 				"ms-python.black-formatter"
 			],
 			"settings": {
