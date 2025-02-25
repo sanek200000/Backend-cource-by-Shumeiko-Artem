@@ -1,28 +1,27 @@
 services:
-  web-app-test:
+  web-app-dev:
     build:
       context: .
-      dockerfile: Dockerfile.test
-    container_name: web-app-test
+      dockerfile: Dockerfile.dev
+    container_name: web-app-dev
     env_file:
-      - path: ./test.env
+      - path: ./dev.env
         required: true
     depends_on:
       - postgres
       - redis
     ports:
-      - "8002:8000"
+      - "8003:8000"
     volumes:
       - ./src:/src
-      - ./tests:/src/tests
-      - ./pytest.ini:/src/pytest.ini
+      - ./requirements.txt:/src/requirements.txt
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   postgres:
     image: postgres:13-alpine
     container_name: postgres
     env_file:
-      - path: ./test.env
+      - path: ./dev.env
         required: true
     volumes:
       - pg_data_booking:/var/lib/postgresql/data
@@ -34,7 +33,7 @@ services:
     image: redis:alpine
     container_name: redis
     env_file:
-      - path: ./test.env
+      - path: ./dev.env
         required: true
     ports:
       - "6379:6379"

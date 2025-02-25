@@ -1,9 +1,9 @@
 {
 	"name": "Development Container",
 	"dockerComposeFile": [
-		"../../docker-compose.yml"
+		"../../docker-compose.dev.yml"
 	],
-	"service": "web-app",
+	"service": "web-app-dev",
 	"workspaceFolder": "/src",
 	"shutdownAction": "stopCompose",
 	"customizations": {

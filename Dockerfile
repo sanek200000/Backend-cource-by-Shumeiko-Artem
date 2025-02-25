@@ -12,4 +12,4 @@ RUN apt-get update && \
     useradd -m service-user && \
     rm -rf /var/lib/apt/lists/* 
 
-USER service-user
+CMD ["python", "./main.py"]
