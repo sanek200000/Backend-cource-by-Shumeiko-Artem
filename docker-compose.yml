@@ -46,8 +46,8 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
     volumes:
       - pg_data_booking:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     restart: unless-stopped
 
   redis:
@@ -56,8 +56,8 @@ services:
     env_file:
       - path: ./dev.env
         required: true
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     restart: unless-stopped
 
 volumes:
