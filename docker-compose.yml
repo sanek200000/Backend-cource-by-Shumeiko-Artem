@@ -19,12 +19,20 @@ services:
     depends_on:
       - postgres
       - redis
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     volumes:
       - ./src:/src
-      #- ./requirements.txt:/src/requirements.txt
-    #command: /bin/sh -c "while sleep 1000; do :; done"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80" 
+    depends_on:
+      - web-app
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf 
 
   postgres:
     image: postgres:13-alpine
