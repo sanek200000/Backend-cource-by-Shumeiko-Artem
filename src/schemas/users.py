@@ -1,10 +1,12 @@
 from pydantic import BaseModel, ConfigDict, EmailStr
 
+from schemas.utils.check_fields import PasswordStr
+
 
 class UserRequestAdd(BaseModel):
     name: str
     email: EmailStr
-    password: str
+    password: PasswordStr
 
 
 class UserAdd(BaseModel):

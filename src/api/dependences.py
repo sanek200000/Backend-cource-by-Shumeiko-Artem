@@ -1,8 +1,15 @@
 from typing import Annotated
-from fastapi import Depends, HTTPException, Query, Request
+from fastapi import Depends, Query, Request
 from pydantic import BaseModel
 
 from db import ASYNC_SESSION_MAKER
+from exceptions import (
+    IncorrectTokenException,
+    IncorrectTokenHTTPException,
+    NoAccessTokenHTTPException,
+    TokenExpiredException,
+    TokenExpiredHTTPException,
+)
 from services.auth import AuthService
 from utils.db_manager import DBManager
 
@@ -19,11 +26,16 @@ def get_token(request: Request):
     token = request.cookies.get("access_tocken")
     if token:
         return token
-    raise HTTPException(status_code=401, detail="Не предоставлен токен доступа")
+    raise NoAccessTokenHTTPException
 
 
 def get_current_user_id(token: str = Depends(get_token)):
-    data = AuthService().encode_token(token)
+    try:
+        data = AuthService().decode_token(token)
+    except IncorrectTokenException:
+        raise IncorrectTokenHTTPException
+    except TokenExpiredException:
+        raise TokenExpiredHTTPException
     return data.get("user_id")
 
 

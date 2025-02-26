@@ -1,7 +1,16 @@
-from fastapi import APIRouter, Body, HTTPException, Response
+from fastapi import APIRouter, Body, Request, Response
 
-from exceptions import ObjictNotFoundException, UserAlradyExistException
-from schemas.users import UserAdd, UserRequestAdd
+from exceptions import (
+    EmailNotRegisteredException,
+    EmailNotRegisteredHTTPException,
+    IncorrectPasswordException,
+    IncorrectPasswordHTTPException,
+    ObjictNotFoundException,
+    UserAlradyExistException,
+    UserAlradyExistHTTPException,
+    UserNotrAuthHTTPException,
+)
+from schemas.users import UserRequestAdd
 from services.auth import AuthService
 from api.dependences import DB_DEP, UserIdDep
 from utils.openapi_examples import AuthOE
@@ -12,30 +21,19 @@ router = APIRouter(prefix="/auth", tags=["Аутентификация и авт
 
 @router.get("/me", summary="Получение токена авторизации")
 async def get_me(db: DB_DEP, user_id: UserIdDep):
-
-    return await db.users.get_one_or_none(id=user_id)
+    return await AuthService(db).get_me(user_id)
 
 
 @router.post("/register", summary="Регистрация")
 async def register_user(
-    db: DB_DEP, data: UserRequestAdd = Body(openapi_examples=AuthOE.register)
+    db: DB_DEP,
+    data: UserRequestAdd = Body(openapi_examples=AuthOE.register),
 ):
-    hashed_password = AuthService().pwd_context.hash(data.password)
-    new_user_data = UserAdd(
-        name=data.name,
-        email=data.email,
-        hashed_password=hashed_password,
-    )
 
     try:
-        await db.users.add(new_user_data)
+        await AuthService(db).register_user(data)
     except UserAlradyExistException:
-        raise HTTPException(
-            409,
-            detail="Пользователь с таким именеи или почтой уже зарегестрирован.",
-        )
-
-    await db.commit()
+        raise UserAlradyExistHTTPException
     return {"status": "OK"}
 
 
@@ -45,17 +43,21 @@ async def login_user(
     response: Response,
     data: UserRequestAdd = Body(openapi_examples=AuthOE.login),
 ):
-    user = await db.users.get_user_with_hashed_password(email=data.email)
+    try:
+        access_tocken = await AuthService(db).login_user(data)
+    except EmailNotRegisteredException:
+        raise EmailNotRegisteredHTTPException
+    except IncorrectPasswordException:
+        raise IncorrectPasswordHTTPException
 
-    if user and AuthService().verify_password(data.password, user.hashed_password):
-        access_tocken = AuthService().create_access_token({"user_id": user.id})
-        response.set_cookie("access_tocken", access_tocken)
-        return {"access_tocken": access_tocken}
-
-    raise HTTPException(status_code=401, detail="Неверный логин или пароль")
+    response.set_cookie("access_tocken", access_tocken)
+    return {"access_tocken": access_tocken}
 
 
 @router.post("/logout", summary="Выход из системы")
-async def logout(response: Response):
-    response.delete_cookie("access_tocken")
+async def logout(request: Request, response: Response):
+    try:
+        await AuthService().logout(request, response)
+    except ObjictNotFoundException:
+        raise UserNotrAuthHTTPException
     return {"status": "OK"}

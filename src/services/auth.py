@@ -1,9 +1,18 @@
-from fastapi import HTTPException
+from fastapi import Request, Response
 import jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 
 from conf import SETTINGS
+from exceptions import (
+    EmailNotRegisteredException,
+    IncorrectPasswordException,
+    IncorrectTokenException,
+    ObjictNotFoundException,
+    TokenExpiredException,
+    UserAlradyExistException,
+)
+from schemas.users import UserAdd, UserRequestAdd
 from services.base import BaseService
 
 
@@ -29,7 +38,7 @@ class AuthService(BaseService):
     def verify_password(self, plain_password, hashed_password):
         return self.pwd_context.verify(plain_password, hashed_password)
 
-    def encode_token(self, token: str):
+    def decode_token(self, token: str):
         try:
             return jwt.decode(
                 token,
@@ -37,6 +46,42 @@ class AuthService(BaseService):
                 algorithms=[SETTINGS.JWT_ALGORITHM],
             )
         except jwt.exceptions.DecodeError:
-            raise HTTPException(status_code=401, detail="Неверный токен")
+            raise IncorrectTokenException
         except jwt.exceptions.ExpiredSignatureError:
-            raise HTTPException(status_code=401, detail="Срок действия подписи истек")
+            raise TokenExpiredException
+
+    async def get_me(self, user_id: int):
+        return await self.db.users.get_one_or_none(id=user_id)
+
+    async def register_user(self, data: UserRequestAdd):
+        hashed_password = self.pwd_context.hash(data.password)
+
+        new_user_data = UserAdd(
+            name=data.name,
+            email=data.email,
+            hashed_password=hashed_password,
+        )
+
+        try:
+            await self.db.users.add(new_user_data)
+        except UserAlradyExistException:
+            raise UserAlradyExistException
+
+        await self.db.commit()
+
+    async def login_user(self, data: UserRequestAdd):
+
+        user = await self.db.users.get_user_with_hashed_password(email=data.email)
+        if not user:
+            raise EmailNotRegisteredException
+        if not self.verify_password(data.password, user.hashed_password):
+            raise IncorrectPasswordException
+
+        access_tocken = self.create_access_token({"user_id": user.id})
+        return access_tocken
+
+    async def logout(self, request: Request, response: Response):
+        if "access_tocken" in request.cookies:
+            response.delete_cookie("access_tocken")
+        else:
+            raise ObjictNotFoundException

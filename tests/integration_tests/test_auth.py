@@ -6,6 +6,6 @@ def test_create_accesse_token():
 
     jwt_token = AuthService().create_access_token(data)
 
-    payload = AuthService().encode_token(jwt_token)
+    payload = AuthService().decode_token(jwt_token)
     assert payload
     assert payload["user_id"] == data["user_id"]
