@@ -75,11 +75,19 @@ class BookingOE:
             },
         },
         "3": {
-            "summary": "Бронирование3",
+            "summary": "Плохое бронирование1",
             "value": {
-                "room_id": 1,
+                "room_id": "",
                 "date_from": date.today(),
                 "date_to": date.today() + timedelta(days=15),
+            },
+        },
+        "4": {
+            "summary": "Плохое бронирование2",
+            "value": {
+                "room_id": 1,
+                "date_from": date.today() + timedelta(days=15),
+                "date_to": date.today(),
             },
         },
     }
@@ -149,7 +157,7 @@ class RoomsOE:
         "1": {
             "summary": "standart",
             "value": {
-                "hotel_id": 0,
+                # "hotel_id": 0,
                 "title": "standart",
                 "description": "sfsdfsdf sdfsdf sdfsdf sdfsdf",
                 "price": 10,
@@ -160,7 +168,7 @@ class RoomsOE:
         "2": {
             "summary": "comfort",
             "value": {
-                "hotel_id": 0,
+                # "hotel_id": 0,
                 "title": "comfort",
                 "description": "",
                 "price": 100,
@@ -171,7 +179,7 @@ class RoomsOE:
         "3": {
             "summary": "luxe",
             "value": {
-                "hotel_id": 0,
+                # "hotel_id": 0,
                 "title": "luxe",
                 "description": "sfsdfsdf sdfsdf sdfsdf sdfsdf",
                 "price": 1000,
@@ -182,7 +190,7 @@ class RoomsOE:
         "4": {
             "summary": "without_facilities",
             "value": {
-                "hotel_id": 0,
+                # "hotel_id": 0,
                 "title": "bomj",
                 "description": "лучший номер на свете",
                 "price": 1,

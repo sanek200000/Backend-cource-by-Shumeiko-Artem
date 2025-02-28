@@ -1,8 +1,10 @@
+from asyncpg import UniqueViolationError
 from fastapi import APIRouter, Body
 from fastapi_cache.decorator import cache
 
 
 from api.dependences import DB_DEP
+from exceptions import FacilityAlradyExistHTTPException
 from schemas.facilities import FacilitiesAdd
 from services.facilities import FacilityService
 from tasks.tasks import test_task
@@ -22,5 +24,8 @@ async def create_facility(
     db: DB_DEP,
     facility_data: FacilitiesAdd = Body(openapi_examples=FacilitiesOE.create),
 ):
-    facility = await FacilityService(db).create_facility(facility_data)
+    try:
+        facility = await FacilityService(db).create_facility(facility_data)
+    except UniqueViolationError:
+        raise FacilityAlradyExistHTTPException
     return {"status": "OK", "data": facility}

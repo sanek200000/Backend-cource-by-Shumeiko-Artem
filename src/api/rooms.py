@@ -70,6 +70,10 @@ async def modify_room(
         raise RoomNotFoundHTTPException
     except HotelNotFoundException:
         raise HotelNotFoundHTTPException
+    except UniqueViolationError:
+        raise RoomAlradyExistHTTPException
+    except ForeignKeyViolationError:
+        raise FalicityNotFoundHTTPException
     return {"status": "OK"}
 
 
@@ -86,6 +90,10 @@ async def edit_room(
         raise RoomNotFoundHTTPException
     except HotelNotFoundException:
         raise HotelNotFoundHTTPException
+    except UniqueViolationError:
+        raise RoomAlradyExistHTTPException
+    except ForeignKeyViolationError:
+        raise FalicityNotFoundHTTPException
     return {"status": "OK"}
 
 

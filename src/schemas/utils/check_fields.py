@@ -19,13 +19,17 @@ def validate_password(value: str) -> str:
 def validate_str(value: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise PydanticCustomError("non_empty_str", "Строка не может быть пустой")
-    # if len(value) < SETTINGS.MIN_FIELD_LEN:
-    #    raise PydanticCustomError(
-    #        "min_length",
-    #        f"Строка должна содержать минимум {SETTINGS.MIN_FIELD_LEN} символ",
-    #    )
+    return value
+
+
+def validate_int(value: int) -> int:
+    if value < 0:
+        raise PydanticCustomError(
+            "negative_value", "Значение не может быть отрицательным"
+        )
     return value
 
 
 PasswordStr = Annotated[str, AfterValidator(validate_password)]
 FieldStr = Annotated[str, AfterValidator(validate_str)]
+FieldInt = Annotated[int, AfterValidator(validate_int)]

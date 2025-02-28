@@ -1,8 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 
+from schemas.utils.check_fields import FieldStr
+
 
 class FacilitiesAdd(BaseModel):
-    title: str
+    title: FieldStr
 
 
 class Facility(FacilitiesAdd):

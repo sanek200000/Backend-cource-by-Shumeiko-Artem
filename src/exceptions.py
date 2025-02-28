@@ -90,6 +90,11 @@ class BaseHTTPException(HTTPException):
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
+class AllRoomsAreBookedHTTPException(BaseHTTPException):
+    status_code = 409
+    detail = "Не осталось свободных номеров."
+
+
 class DateToEaelierDateFromHTTPException(BaseHTTPException):
     status_code = 422
     detail = "Дата выезда раньше даты заезда."
@@ -138,6 +143,11 @@ class IncorrectPasswordHTTPException(BaseHTTPException):
 class UserAlradyExistHTTPException(BaseHTTPException):
     status_code = 409
     detail = "Такой пользователь уже существует."
+
+
+class FacilityAlradyExistHTTPException(BaseHTTPException):
+    status_code = 409
+    detail = "Такая услуга уже есть в базе."
 
 
 class HotelAlradyExistHTTPException(BaseHTTPException):

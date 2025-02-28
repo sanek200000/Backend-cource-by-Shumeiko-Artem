@@ -1,9 +1,5 @@
 from api.dependences import UserIdDep
-from exceptions import (
-    AllRoomsAreBookedException,
-    BookingNotFoundException,
-    ObjictNotFoundException,
-)
+
 from schemas.bookings import BookingAdd, BookingAddRequest
 from services.base import BaseService
 from services.rooms import RoomService
@@ -28,22 +24,15 @@ class BookingService(BaseService):
             **booking_data.model_dump(),
         )
 
-        try:
-            booking = await self.db.bookings.add_bookings(
-                _booking_data,
-                hotel_id=hotel.id,
-            )
-        except AllRoomsAreBookedException:
-            raise AllRoomsAreBookedException
+        booking = await self.db.bookings.add_bookings(
+            _booking_data,
+            hotel_id=hotel.id,
+        )
 
         await self.db.commit()
         return booking
 
     async def delete_booking(self, booking_id: int):
-        try:
-            await self.db.bookings.get_one(id=booking_id)
-        except ObjictNotFoundException:
-            raise BookingNotFoundException
-
+        await self.db.bookings.get_one(id=booking_id)
         await self.db.bookings.delete(id=booking_id)
         await self.db.commit()
