@@ -90,6 +90,11 @@ class BaseHTTPException(HTTPException):
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
+class DateToEaelierDateFromHTTPException(BaseHTTPException):
+    status_code = 422
+    detail = "Дата выезда раньше даты заезда."
+
+
 class EmptyFielhHTTPException(BaseHTTPException):
     status_code = 415
     detail = "Строка не может быть пустой."
@@ -140,6 +145,11 @@ class HotelAlradyExistHTTPException(BaseHTTPException):
     detail = "Такой отель уже существует."
 
 
+class RoomAlradyExistHTTPException(BaseHTTPException):
+    status_code = 409
+    detail = "Такой номер в этом отеле уже существует."
+
+
 class RoomNotFoundHTTPException(BaseHTTPException):
     status_code = 404
     detail = "Номер не найден."
@@ -148,6 +158,11 @@ class RoomNotFoundHTTPException(BaseHTTPException):
 class HotelNotFoundHTTPException(BaseHTTPException):
     status_code = 404
     detail = "Отель не найден."
+
+
+class FalicityNotFoundHTTPException(BaseHTTPException):
+    status_code = 404
+    detail = "Удобство не найдено."
 
 
 class BookingNotFoundHTTPException(BaseHTTPException):
@@ -161,7 +176,13 @@ class NoAccessTokenHTTPException(BaseHTTPException):
 
 
 class IncorrectTokenHTTPException(BaseHTTPException):
+    status_code = 409
     detail = "Некорректный токен"
+
+
+class NoDataHTTPException(BaseHTTPException):
+    status_code = 409
+    detail = "Нет данных для обновления"
 
 
 def check_date_to_after_date_from(date_from: date, date_to: date) -> None:

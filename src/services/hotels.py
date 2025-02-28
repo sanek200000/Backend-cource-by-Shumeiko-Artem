@@ -1,14 +1,7 @@
 from datetime import date
 
-from asyncpg import UniqueViolationError
-from fastapi import HTTPException
 from api.dependences import PaginationDep
-from exceptions import (
-    DateToEaelierDateFromException,
-    HotelAlradyExistException,
-    HotelNotFoundException,
-    ObjictNotFoundException,
-)
+from exceptions import HotelNotFoundException, ObjictNotFoundException
 from schemas.hotels import HotelAdd, HotelPatch
 from services.base import BaseService
 
@@ -39,22 +32,22 @@ class HotelService(BaseService):
         return await self.db.hotels.get_all()
 
     async def create_hotel(self, data: HotelAdd):
-        try:
-            hotel = await self.db.hotels.add(data)
-        except UniqueViolationError:
-            raise HotelAlradyExistException
+        hotel = await self.db.hotels.add(data)
         await self.db.commit()
         return hotel
 
     async def put_hotel(self, id: int, data: HotelAdd):
+        await self.get_hotel_with_check(id)
         await self.db.hotels.edit(data, id=id)
         await self.db.commit()
 
     async def patch_hotel(self, id: int, data: HotelPatch):
+        await self.get_hotel_with_check(id)
         await self.db.hotels.edit(data, exclude_unset=True, id=id)
         await self.db.commit()
 
     async def delete_hotel(self, id: int):
+        await self.get_hotel_with_check(id)
         await self.db.hotels.delete(id=id)
         await self.db.commit()
 

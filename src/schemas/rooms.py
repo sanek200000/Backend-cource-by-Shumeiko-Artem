@@ -1,18 +1,19 @@
 from pydantic import BaseModel, ConfigDict
 
 from schemas.facilities import Facility
+from schemas.utils.check_fields import FieldStr
 
 
 class RoomAdd(BaseModel):
     hotel_id: int
-    title: str
+    title: FieldStr
     description: str | None = None
     price: int
     quantity: int
 
 
 class RoomAddRequest(BaseModel):
-    title: str
+    title: FieldStr
     description: str | None = None
     price: int
     quantity: int

@@ -37,6 +37,7 @@ class HotelsRepository(BaseRepository):
             hotels_ids_to_get = hotels_ids_to_get.filter(
                 func.lower(self.model.title).contains(title.strip().lower())
             )
+            print(f"==================== {hotels_ids_to_get = }")
 
         if location:
             hotels_ids_to_get = hotels_ids_to_get.filter(

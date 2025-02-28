@@ -162,7 +162,7 @@ class RoomsOE:
             "value": {
                 "hotel_id": 0,
                 "title": "comfort",
-                "description": "sfsdfsdf sdfsdf sdfsdf sdfsdf",
+                "description": "",
                 "price": 100,
                 "quantity": 2,
                 "facilities_ids": [2, 3],

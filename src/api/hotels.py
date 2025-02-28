@@ -1,12 +1,16 @@
 from datetime import date
+from asyncpg import PostgresSyntaxError, UniqueViolationError
 from fastapi import Body, HTTPException, Query, APIRouter
 from fastapi_cache.decorator import cache
 
 from api.dependences import DB_DEP, PaginationDep
 from exceptions import (
     DateToEaelierDateFromException,
-    HotelAlradyExistException,
+    DateToEaelierDateFromHTTPException,
     HotelAlradyExistHTTPException,
+    HotelNotFoundException,
+    HotelNotFoundHTTPException,
+    NoDataHTTPException,
 )
 from schemas.hotels import HotelAdd, HotelPatch
 from services.hotels import HotelService
@@ -41,7 +45,7 @@ async def get_hotel(
             date_to,
         )
     except DateToEaelierDateFromException as ex:
-        raise HTTPException(422, detail=ex.detail)
+        raise DateToEaelierDateFromHTTPException
 
 
 @router.post("", summary="Добавить отель в список")
@@ -51,7 +55,7 @@ async def create_hotel(
 ):
     try:
         hotel = await HotelService(db).create_hotel(hotel_data)
-    except HotelAlradyExistException:
+    except UniqueViolationError:
         raise HotelAlradyExistHTTPException
     return {"status": "OK", "data": hotel}
 
@@ -62,7 +66,12 @@ async def create_hotel(
     description="Обновление информации об отеле",
 )
 async def modify_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelAdd):
-    await HotelService(db).put_hotel(hotel_id, hotel_data)
+    try:
+        await HotelService(db).put_hotel(hotel_id, hotel_data)
+    except UniqueViolationError:
+        raise HotelAlradyExistHTTPException
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
     return {"status": "OK"}
 
 
@@ -72,7 +81,14 @@ async def modify_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelAdd):
     description="Частичное обновление информации об отеле",
 )
 async def edit_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelPatch):
-    await HotelService(db).patch_hotel(hotel_id, hotel_data)
+    try:
+        await HotelService(db).patch_hotel(hotel_id, hotel_data)
+    except UniqueViolationError:
+        raise HotelAlradyExistHTTPException
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
+    except PostgresSyntaxError:
+        raise NoDataHTTPException
     return {"status": "OK"}
 
 
@@ -82,5 +98,8 @@ async def edit_hotel(db: DB_DEP, hotel_id: int, hotel_data: HotelPatch):
     description="Удаление информации об отеле из БД",
 )
 async def delete_hotel(db: DB_DEP, hotel_id: int):
-    await HotelService(db).delete_hotel(hotel_id)
+    try:
+        await HotelService(db).delete_hotel(hotel_id)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
     return {"status": "OK"}

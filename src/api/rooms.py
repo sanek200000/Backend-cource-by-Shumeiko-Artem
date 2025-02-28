@@ -1,11 +1,14 @@
 from datetime import date
+from asyncpg import ForeignKeyViolationError, UniqueViolationError
 from fastapi import APIRouter, Body, Query
 
 from api.dependences import DB_DEP
 
 from exceptions import (
+    FalicityNotFoundHTTPException,
     HotelNotFoundException,
     HotelNotFoundHTTPException,
+    RoomAlradyExistHTTPException,
     RoomNotFoundException,
     RoomNotFoundHTTPException,
 )
@@ -47,6 +50,10 @@ async def create_room(
         room = await RoomService(db).create_room(hotel_id, room_data)
     except HotelNotFoundException:
         raise HotelNotFoundHTTPException
+    except UniqueViolationError:
+        raise RoomAlradyExistHTTPException
+    except ForeignKeyViolationError:
+        raise FalicityNotFoundHTTPException
     return {"status": "OK", "data": room}
 
 
