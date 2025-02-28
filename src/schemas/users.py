@@ -1,23 +1,28 @@
 from pydantic import BaseModel, ConfigDict, EmailStr
 
-from schemas.utils.check_fields import PasswordStr
+from schemas.utils.check_fields import FieldStr, PasswordStr
 
 
 class UserRequestAdd(BaseModel):
-    name: str
+    name: FieldStr
     email: EmailStr
     password: PasswordStr
 
 
 class UserAdd(BaseModel):
-    name: str
+    name: FieldStr
     email: EmailStr
     hashed_password: str
 
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: PasswordStr
+
+
 class User(BaseModel):
     id: int
-    name: str
+    name: FieldStr
     email: EmailStr
 
     model_config = ConfigDict(from_attributes=True)

@@ -1,9 +1,11 @@
 from datetime import date
 
+from asyncpg import UniqueViolationError
 from fastapi import HTTPException
 from api.dependences import PaginationDep
 from exceptions import (
     DateToEaelierDateFromException,
+    HotelAlradyExistException,
     HotelNotFoundException,
     ObjictNotFoundException,
 )
@@ -37,7 +39,10 @@ class HotelService(BaseService):
         return await self.db.hotels.get_all()
 
     async def create_hotel(self, data: HotelAdd):
-        hotel = await self.db.hotels.add(data)
+        try:
+            hotel = await self.db.hotels.add(data)
+        except UniqueViolationError:
+            raise HotelAlradyExistException
         await self.db.commit()
         return hotel
 

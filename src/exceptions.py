@@ -1,6 +1,8 @@
 from datetime import date
 from fastapi import HTTPException
 
+from conf import SETTINGS
+
 
 class BaseException(Exception):
     detail = "Неожиданная ошибка"
@@ -11,6 +13,10 @@ class BaseException(Exception):
 
 class ObjictNotFoundException(BaseException):
     detail = "Объект не найден"
+
+
+class ObjictAlradyExistException(BaseException):
+    detail = "Похожий объект уже существует."
 
 
 class RoomNotFoundException(ObjictNotFoundException):
@@ -29,8 +35,12 @@ class AllRoomsAreBookedException(BaseException):
     detail = "Не осталось свободных номеров"
 
 
-class UserAlradyExistException(BaseException):
-    detail = "Похожий объект уже существует."
+class UserAlradyExistException(ObjictAlradyExistException):
+    detail = "Такой пользователь уже существует."
+
+
+class HotelAlradyExistException(ObjictAlradyExistException):
+    detail = "Такой отель уже существует."
 
 
 class DateToEaelierDateFromException(BaseException):
@@ -53,6 +63,22 @@ class TokenExpiredException(BaseException):
     detail = "Срок действия токена истек"
 
 
+class EmptyFieldException(BaseException):
+    detail = "Строка не может быть пустой"
+
+
+class TooShortFieldException(BaseException):
+    detail = "Строка слишком короткая"
+
+
+class EmptyPasswordException(BaseException):
+    detail = "Строка не может быть пустой"
+
+
+class TooShortPasswordException(BaseException):
+    detail = "Строка слишком короткая"
+
+
 """=========================================== HTTP Exceptions ==============================="""
 
 
@@ -62,6 +88,26 @@ class BaseHTTPException(HTTPException):
 
     def __init__(self, *args, **kwargs):
         super().__init__(status_code=self.status_code, detail=self.detail)
+
+
+class EmptyFielhHTTPException(BaseHTTPException):
+    status_code = 415
+    detail = "Строка не может быть пустой."
+
+
+class EmptyPasswordHTTPException(BaseHTTPException):
+    status_code = 415
+    detail = "Пароль не может быть пустым."
+
+
+class TooShortPasswordHTTPException(BaseHTTPException):
+    status_code = 415
+    detail = f"Пароль должен содержать минимум {SETTINGS.MIN_PASSSWORD_LEN} символа."
+
+
+class TooShortFieldHTTPException(BaseHTTPException):
+    status_code = 415
+    detail = f"Строка должна содержать минимум {SETTINGS.MIN_FIELD_LEN} символ."
 
 
 class UserNotrAuthHTTPException(BaseHTTPException):
@@ -87,6 +133,11 @@ class IncorrectPasswordHTTPException(BaseHTTPException):
 class UserAlradyExistHTTPException(BaseHTTPException):
     status_code = 409
     detail = "Такой пользователь уже существует."
+
+
+class HotelAlradyExistHTTPException(BaseHTTPException):
+    status_code = 409
+    detail = "Такой отель уже существует."
 
 
 class RoomNotFoundHTTPException(BaseHTTPException):

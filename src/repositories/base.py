@@ -69,7 +69,7 @@ class BaseRepository:
                 f"Не удалось добавить данные в БД, входные данные={data}, тип ошибки: {type(ex.orig.__cause__)}"
             )
             if isinstance(ex.orig.__cause__, UniqueViolationError):
-                raise UserAlradyExistException from ex
+                raise UniqueViolationError
             else:
                 logging.error(
                     f"Незнакомая ошибка, входные данные={data}, тип ошибки: {type(ex.orig.__cause__)}"

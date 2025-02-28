@@ -34,7 +34,6 @@ class AuthOE:
         "1": {
             "summary": "user1",
             "value": {
-                "name": "user1",
                 "email": "user1@example.com",
                 "password": "password",
             },
@@ -42,7 +41,6 @@ class AuthOE:
         "2": {
             "summary": "user2",
             "value": {
-                "name": "user2",
                 "email": "user2@example.com",
                 "password": "password",
             },
@@ -50,7 +48,6 @@ class AuthOE:
         "3": {
             "summary": "user3",
             "value": {
-                "name": "user3",
                 "email": "user3@example.com",
                 "password": "password",
             },

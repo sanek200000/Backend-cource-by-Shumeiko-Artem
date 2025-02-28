@@ -3,7 +3,11 @@ from fastapi import Body, HTTPException, Query, APIRouter
 from fastapi_cache.decorator import cache
 
 from api.dependences import DB_DEP, PaginationDep
-from exceptions import DateToEaelierDateFromException
+from exceptions import (
+    DateToEaelierDateFromException,
+    HotelAlradyExistException,
+    HotelAlradyExistHTTPException,
+)
 from schemas.hotels import HotelAdd, HotelPatch
 from services.hotels import HotelService
 from utils.openapi_examples import HotelsOE
@@ -45,8 +49,10 @@ async def create_hotel(
     db: DB_DEP,
     hotel_data: HotelAdd = Body(openapi_examples=HotelsOE.create),
 ):
-
-    hotel = await HotelService(db).create_hotel(hotel_data)
+    try:
+        hotel = await HotelService(db).create_hotel(hotel_data)
+    except HotelAlradyExistException:
+        raise HotelAlradyExistHTTPException
     return {"status": "OK", "data": hotel}
 
 

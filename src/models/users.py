@@ -7,6 +7,6 @@ class UsersOrm(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(length=100), unique=True)
+    name: Mapped[str] = mapped_column(String(length=100))
     email: Mapped[str] = mapped_column(String(length=50), unique=True)
     hashed_password: Mapped[str] = mapped_column(String(length=64))

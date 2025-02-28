@@ -1,3 +1,4 @@
+from asyncpg import UniqueViolationError
 from fastapi import Request, Response
 import jwt
 from passlib.context import CryptContext
@@ -12,14 +13,14 @@ from exceptions import (
     TokenExpiredException,
     UserAlradyExistException,
 )
-from schemas.users import UserAdd, UserRequestAdd
+from schemas.users import UserAdd, UserLogin, UserRequestAdd
 from services.base import BaseService
 
 
 class AuthService(BaseService):
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    def create_access_token(self, data: dict):
+    def create_access_tocken(self, data: dict):
         to_encode = data.copy()
         expire = datetime.now(timezone.utc) + timedelta(
             minutes=SETTINGS.ACCESS_TOKEN_EXPIRE_MINUTES
@@ -64,12 +65,12 @@ class AuthService(BaseService):
 
         try:
             await self.db.users.add(new_user_data)
-        except UserAlradyExistException:
+        except UniqueViolationError:
             raise UserAlradyExistException
 
         await self.db.commit()
 
-    async def login_user(self, data: UserRequestAdd):
+    async def login_user(self, data: UserLogin):
 
         user = await self.db.users.get_user_with_hashed_password(email=data.email)
         if not user:
@@ -77,7 +78,7 @@ class AuthService(BaseService):
         if not self.verify_password(data.password, user.hashed_password):
             raise IncorrectPasswordException
 
-        access_tocken = self.create_access_token({"user_id": user.id})
+        access_tocken = self.create_access_tocken({"user_id": user.id})
         return access_tocken
 
     async def logout(self, request: Request, response: Response):

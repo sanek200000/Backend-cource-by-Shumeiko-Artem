@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     REDIS_HOST: str
     REDIS_PORT: int
 
+    MIN_PASSSWORD_LEN: int = 3
+    MIN_FIELD_LEN: int = 1
+
 
 SETTINGS = Settings()
 

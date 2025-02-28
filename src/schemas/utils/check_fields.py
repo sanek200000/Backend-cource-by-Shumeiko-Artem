@@ -1,31 +1,31 @@
-from pydantic_core import PydanticCustomError, core_schema
+from typing import Annotated
+from pydantic import AfterValidator
+from pydantic_core import PydanticCustomError
+
+from conf import SETTINGS
 
 
-class PasswordStr(str):
-    """
-    Пользовательский тип для пароля.
-    Пароль должен быть не пустым и содержать минимум 3 символа.
-    """
+def validate_password(value: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise PydanticCustomError("password_empty", "Пароль не может быть пустым")
+    if len(value) < SETTINGS.MIN_PASSSWORD_LEN:
+        raise PydanticCustomError(
+            "password_too_short",
+            f"Пароль должен содержать минимум {SETTINGS.MIN_PASSSWORD_LEN} символа",
+        )
+    return value
 
-    @classmethod
-    def __get_pydantic_core_schema__(cls, source_type, handler):
-        """
-        Метод, который определяет схему валидации для пользовательского типа.
-        """
-        return core_schema.with_info_plain_validator_function(cls._validate)
 
-    @classmethod
-    def _validate(
-        cls, value: str, info: core_schema.ValidationInfo
-    ) -> str:  # Убрали параметр info
-        """
-        Валидация пароля.
-        """
-        if not value or not value.strip():
-            raise PydanticCustomError("password_empty", "Пароль не может быть пустым")
-        if len(value) < 3:
-            raise PydanticCustomError(
-                "password_too_short",
-                "Пароль должен содержать минимум 3 символа",
-            )
-        return cls(value)
+def validate_str(value: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise PydanticCustomError("non_empty_str", "Строка не может быть пустой")
+    # if len(value) < SETTINGS.MIN_FIELD_LEN:
+    #    raise PydanticCustomError(
+    #        "min_length",
+    #        f"Строка должна содержать минимум {SETTINGS.MIN_FIELD_LEN} символ",
+    #    )
+    return value
+
+
+PasswordStr = Annotated[str, AfterValidator(validate_password)]
+FieldStr = Annotated[str, AfterValidator(validate_str)]

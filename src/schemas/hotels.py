@@ -1,9 +1,11 @@
 from pydantic import BaseModel, Field
 
+from schemas.utils.check_fields import FieldStr
+
 
 class HotelAdd(BaseModel):
-    title: str
-    location: str
+    title: FieldStr
+    location: FieldStr
 
 
 class Hotel(HotelAdd):
@@ -11,5 +13,5 @@ class Hotel(HotelAdd):
 
 
 class HotelPatch(BaseModel):
-    title: str | None = Field(default=None)
-    location: str | None = Field(default=None)
+    title: FieldStr | None = Field(default=None)
+    location: FieldStr | None = Field(default=None)

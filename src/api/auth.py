@@ -10,7 +10,7 @@ from exceptions import (
     UserAlradyExistHTTPException,
     UserNotrAuthHTTPException,
 )
-from schemas.users import UserRequestAdd
+from schemas.users import UserLogin, UserRequestAdd
 from services.auth import AuthService
 from api.dependences import DB_DEP, UserIdDep
 from utils.openapi_examples import AuthOE
@@ -41,7 +41,7 @@ async def register_user(
 async def login_user(
     db: DB_DEP,
     response: Response,
-    data: UserRequestAdd = Body(openapi_examples=AuthOE.login),
+    data: UserLogin = Body(openapi_examples=AuthOE.login),
 ):
     try:
         access_tocken = await AuthService(db).login_user(data)
