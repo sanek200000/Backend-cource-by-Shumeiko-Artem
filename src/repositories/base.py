@@ -59,7 +59,7 @@ class BaseRepository:
 
     async def add(self, data: BaseModel):
         query = insert(self.model).values(**data.model_dump()).returning(self.model)
-        print(query.compile(compile_kwargs={"literal_binds": True}))
+        # print(query.compile(compile_kwargs={"literal_binds": True}))
 
         try:
             result = await self.session.execute(query)
