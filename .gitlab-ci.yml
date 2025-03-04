@@ -4,14 +4,14 @@ stages:
 
 build-job:     
   stage: build
-  before_script:
-    - cp ${ENV} .env
-    - cp ${TEST_ENV} .env-test
   script:
     - docker build -t booking-api-image .
 
 deploy-job:
   stage: deploy
+  before_script:
+    - cp ${ENV} .env
+    - cp ${TEST_ENV} .env-test
   #environment: production
   script:
     - docker compose up -d
