@@ -12,6 +12,7 @@ deploy-job:
   before_script:
     - cp ${ENV} .env
     - cp ${TEST_ENV} .env-test
+    - ls -AlF
   #environment: production
   script:
     - docker compose up -d
