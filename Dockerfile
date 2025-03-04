@@ -12,4 +12,5 @@ RUN apt-get update && \
     useradd -m service-user && \
     rm -rf /var/lib/apt/lists/* 
 
-CMD ["python", "./main.py"]
+#CMD ["python", "./main.py"]
+CMD alembic upgrade head; python ./main.py

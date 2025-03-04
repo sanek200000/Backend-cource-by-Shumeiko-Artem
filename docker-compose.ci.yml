@@ -27,7 +27,7 @@ services:
     image: postgres:13-alpine
     container_name: postgres
     env_file:
-      - path: ./dev.env
+      - path: .env
         required: true
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -43,7 +43,7 @@ services:
     image: redis:alpine
     container_name: redis
     env_file:
-      - path: ./dev.env
+      - path: .env
         required: true
     expose:
       - "6379"
