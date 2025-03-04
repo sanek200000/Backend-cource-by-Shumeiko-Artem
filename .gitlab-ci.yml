@@ -12,6 +12,6 @@ build-job:
 
 deploy-job:
   stage: deploy
-  environment: production
+  #environment: production
   script:
     - docker compose up -d
