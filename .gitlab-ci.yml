@@ -1,11 +1,16 @@
 stages:
   - build
-  - deploy
+  #- deploy
 
 build-job:
   stage: build
+  before_script:
+    - cp ${ENV} .env
+    - cp ${TEST_ENV} .env-test
+    - pwd && ls -AlF
   script:
-    - docker build -t booking-api-image .
+    #- docker build -t booking-api-image .
+    - docker compose up -d
 
 deploy-job:
   stage: deploy

@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 COPY requirements.txt /temp/requirements.txt
-#COPY src /src
+COPY src /src
 WORKDIR /src
 
 EXPOSE 8000
