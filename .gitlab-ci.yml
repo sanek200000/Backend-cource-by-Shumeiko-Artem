@@ -1,8 +1,17 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
 stages:
   - build
   - deploy
 
-build-job:     
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+
+build-job:
   stage: build
   script:
     - docker build -t booking-api-image .
@@ -13,6 +22,5 @@ deploy-job:
     - cp ${ENV} .env
     - cp ${TEST_ENV} .env-test
     - pwd && ls -AlF
-  #environment: production
   script:
     - docker compose -f docker-compose.ci.yml up -d
