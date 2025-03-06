@@ -12,11 +12,11 @@ build-job:
     #- docker build -t booking-api-image .
     - docker compose up -d
 
-deploy-job:
-  stage: deploy
-  before_script:
-    - cp ${ENV} .env
-    - cp ${TEST_ENV} .env-test
-    - pwd && ls -AlF
-  script:
-    - docker compose -f docker-compose.ci.yml up -d
+#deploy-job:
+#  stage: deploy
+#  before_script:
+#    - cp ${ENV} .env
+#    - cp ${TEST_ENV} .env-test
+#    - pwd && ls -AlF
+#  script:
+#    - docker compose -f docker-compose.ci.yml up -d
