@@ -49,6 +49,6 @@ services:
       - "6379"
     restart: unless-stopped
 
-  volumes:
-    pg_data_booking:
-      driver: local
+volumes:
+  pg_data_booking:
+    driver: local
