@@ -18,3 +18,4 @@ deploy-job:
     - cp ${TEST_ENV} .env-test
   script:
     - docker compose -f docker-compose.ci.yml up -d
+    - docker exec nginx nginx -s reload
