@@ -10,7 +10,7 @@ build-job:
     - pwd && ls -AlF
   script:
     #- docker build -t booking-api-image .
-    - docker compose -f docker-compose.ci.yml up -d
+    - docker compose -f docker-compose.yml up -d
 
 
 #deploy-job:
