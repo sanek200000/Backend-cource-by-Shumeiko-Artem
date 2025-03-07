@@ -17,7 +17,6 @@ class RoomsFacilitiesRepository(BaseRepository):
     mapper = FacilityDataMapper
 
     async def edit(self, room_id, facilities_ids):
-
         get_current_facilities_ids_query = select(self.model.facility_id).filter_by(
             room_id=room_id
         )

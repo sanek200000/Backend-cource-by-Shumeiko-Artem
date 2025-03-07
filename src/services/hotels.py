@@ -7,7 +7,6 @@ from services.base import BaseService
 
 
 class HotelService(BaseService):
-
     async def get_filtred_by_time(
         self,
         pagination: PaginationDep,
@@ -16,7 +15,6 @@ class HotelService(BaseService):
         date_from: date,
         date_to: date,
     ):
-
         per_page = pagination.per_page or 5
 
         return await self.db.hotels.get_filtred_by_time(

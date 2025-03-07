@@ -2,7 +2,6 @@ from datetime import date, timedelta
 
 
 class AuthOE:
-
     register = {
         "1": {
             "summary": "user1",
@@ -56,7 +55,6 @@ class AuthOE:
 
 
 class BookingOE:
-
     create = {
         "1": {
             "summary": "Бронирование1",
@@ -94,7 +92,6 @@ class BookingOE:
 
 
 class FacilitiesOE:
-
     create = {
         "1": {
             "summary": "Internet",
@@ -118,7 +115,6 @@ class FacilitiesOE:
 
 
 class HotelsOE:
-
     create = {
         "1": {
             "summary": "Сочи1",
@@ -152,7 +148,6 @@ class HotelsOE:
 
 
 class RoomsOE:
-
     create = {
         "1": {
             "summary": "standart",

@@ -71,7 +71,6 @@ class AuthService(BaseService):
         await self.db.commit()
 
     async def login_user(self, data: UserLogin):
-
         user = await self.db.users.get_user_with_hashed_password(email=data.email)
         if not user:
             raise EmailNotRegisteredException

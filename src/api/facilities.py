@@ -7,7 +7,6 @@ from api.dependences import DB_DEP
 from exceptions import FacilityAlradyExistHTTPException
 from schemas.facilities import FacilitiesAdd
 from services.facilities import FacilityService
-from tasks.tasks import test_task
 from utils.openapi_examples import FacilitiesOE
 
 router = APIRouter(prefix="/facilities", tags=["Удобства в номерах"])

@@ -29,7 +29,6 @@ async def register_user(
     db: DB_DEP,
     data: UserRequestAdd = Body(openapi_examples=AuthOE.register),
 ):
-
     try:
         await AuthService(db).register_user(data)
     except UserAlradyExistException:

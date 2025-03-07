@@ -1,6 +1,6 @@
 from datetime import date
 from asyncpg import PostgresSyntaxError, UniqueViolationError
-from fastapi import Body, HTTPException, Query, APIRouter
+from fastapi import Body, Query, APIRouter
 from fastapi_cache.decorator import cache
 
 from api.dependences import DB_DEP, PaginationDep
@@ -35,7 +35,6 @@ async def get_hotel(
     date_from: date = Query(example="2024-11-01"),
     date_to: date = Query(example="2024-11-08"),
 ):
-
     try:
         return await HotelService(db).get_filtred_by_time(
             pagination,
@@ -44,7 +43,7 @@ async def get_hotel(
             date_from,
             date_to,
         )
-    except DateToEaelierDateFromException as ex:
+    except DateToEaelierDateFromException:
         raise DateToEaelierDateFromHTTPException
 
 
