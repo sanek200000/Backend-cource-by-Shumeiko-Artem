@@ -17,30 +17,33 @@ build-job:
 lint-job:
   stage: lint
   script:
-    - docker run -rm --network nginx-network booking-api-image ruff check
+    - docker run --rm --network runner booking-api-image ruff check
 
 format-job:
   stage: format
   script:
-    - docker run -rm --network nginx-network booking-api-image ruff format --check
+    - docker run --rm --network runner booking-api-image ruff format --check
 
 
 migrations-job:
   stage: migrations
   script:
-    - docker run -rm --network nginx-network booking-api-image alembic upgrade head
+    - docker run --rm --network runner booking-api-image alembic upgrade head
 
 
 test-job:
   stage: test
+  before_script:
+    - cp ${TEST_ENV} .env-test
+    - docker exec -it -e PGPASSWORD=$POSTGRES_PASSWORD postgres psql -U $POSTGRES_USER -c "SELECT 'CREATE DATABASE test' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'test')\gexec"
   script:
-    - docker run -rm --network nginx-network booking-api-image pytest -s -v
+    - docker run --rm --network runner booking-api-image pytest -s -v
 
 deploy-job:
   stage: deploy
   before_script:
     - cp ${ENV} .env
-    - cp ${TEST_ENV} .env-test
+    #- cp ${TEST_ENV} .env-test
   script:
     - docker compose -f docker-compose.ci.yml up -d
     #- docker exec nginx nginx -s reload
