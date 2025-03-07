@@ -20,8 +20,6 @@ services:
       - redis
     expose:
       - "8000"
-    volumes:
-      - ./src:/src
 
   postgres:
     image: postgres:13-alpine
