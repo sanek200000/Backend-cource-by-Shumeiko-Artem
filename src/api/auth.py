@@ -19,7 +19,7 @@ from utils.openapi_examples import AuthOE
 router = APIRouter(prefix="/auth", tags=["Аутентификация и авторизация"])
 
 
-@router.get("/me", summary="Получение токена авторизации")
+@router.get("/me", summary="Мой профиль")
 async def get_me(db: DB_DEP, user_id: UserIdDep):
     return await AuthService(db).get_me(user_id)
 
