@@ -14,4 +14,4 @@ RUN apt-get update && \
 
 #CMD ["python", "./main.py"]
 #CMD alembic upgrade head; python main.py
-CMD ls -AlF; python ./main.py
+CMD ls -AlF; python main.py
